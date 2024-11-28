@@ -70,9 +70,16 @@
 
 # Smart Agriculture - Field Monitoring System
 
-University IoT project for intelligent monitoring of agricultural fields. It includes sensor simulation (soil moisture,
-temperature, pH, water salinity, relative humidity, rainfall) and automatic alert generation for critical conditions.
-The system aims to optimise resource management and improve agricultural efficiency.
+The main objective of the project is the development and simulation of a _Smart Agriculture - Field Monitoring System_, capable of collecting and analysing environmental and soil data through simulated IoT sensors.
+
+The system aims to optimise resource management and improve the efficiency of agricultural activities by providing real-time information on the following key parameters: soil moisture, temperature, soil pH, water salinity, relative humidity and precipitation.
+
+Through continuous monitoring and data analysis, the system is designed to:
+1.	Identify sub-optimal conditions for crops (e.g. water stress, pH imbalances, critical temperatures).
+2.	Generate automatic alerts to signal anomalies or situations that require action (e.g. irrigation, pH corrections, salinity management).
+3.	Support data-driven decisions to optimise water use, prevent crop damage and improve agricultural productivity in a sustainable manner.
+
+By simulating sensors and related conditions, the project provides a scalable and adaptable model for future implementations in real-world contexts, promoting technological innovation in the agricultural sector.
 
 ## Exam Requirements
 
