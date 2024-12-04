@@ -7,7 +7,7 @@ import junit.framework.TestSuite;
 /**
  * Unit test for simple App.
  */
-public class SensorSimulatorApplicationTest
+public class AbstractSensorSimulatorApplicationTest
     extends TestCase
 {
     /**
@@ -15,7 +15,7 @@ public class SensorSimulatorApplicationTest
      *
      * @param testName name of the test case
      */
-    public SensorSimulatorApplicationTest(String testName )
+    public AbstractSensorSimulatorApplicationTest(String testName )
     {
         super( testName );
     }
@@ -25,7 +25,7 @@ public class SensorSimulatorApplicationTest
      */
     public static Test suite()
     {
-        return new TestSuite( SensorSimulatorApplicationTest.class );
+        return new TestSuite( AbstractSensorSimulatorApplicationTest.class );
     }
 
     /**
