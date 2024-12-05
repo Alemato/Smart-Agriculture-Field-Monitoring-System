@@ -1,6 +1,7 @@
 package it.univaq.disim.world;
 
 public class ClimateContext {
+    private WeatherCondition weatherCondition;
     private boolean isRaining;
     private float externalTemperature; // Temperatura esterna
     private float relativeHumidity;    // Umidità relativa
@@ -9,6 +10,14 @@ public class ClimateContext {
         this.isRaining = isRaining;
         this.externalTemperature = externalTemperature;
         this.relativeHumidity = relativeHumidity;
+    }
+
+    public WeatherCondition getWeatherCondition() {
+        return weatherCondition;
+    }
+
+    public void setWeatherCondition(WeatherCondition weatherCondition) {
+        this.weatherCondition = weatherCondition;
     }
 
     public boolean isRaining() {

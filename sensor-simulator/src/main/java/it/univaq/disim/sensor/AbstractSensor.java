@@ -1,6 +1,6 @@
 package it.univaq.disim.sensor;
 
-public abstract class AbstractSensor<T> implements Sensor<T>{
+public abstract class AbstractSensor<T> implements Sensor<T> {
     private String name;
     private String unit;
     private T value;
