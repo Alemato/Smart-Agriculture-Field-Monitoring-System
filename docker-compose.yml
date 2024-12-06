@@ -1,0 +1,42 @@
+name: Smart-Agriculture-Field-Monitoring-System
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto-SA-FMS
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - mosquitto_sa_fms_data:/mosquitto
+    networks:
+      - se4iot-SA-FMS-network
+    # restart: always
+
+  node-red:
+    build:
+      context: ./nodered
+      dockerfile: Dockerfile
+    image: nodered_sa_fms:latest
+    container_name: node-red-SA-FMS
+    environment:
+      - TZ=Europe/Amsterdam
+      - BOT_TOKEN=TestBOT
+    ports:
+      - "1880:1880" # Porta web di Node-RED
+    volumes:
+      - nodered_sa_fms_data:/data
+    networks:
+      - se4iot-SA-FMS-network
+    # restart: always
+    depends_on:
+      - mosquitto
+
+volumes:
+  mosquitto_sa_fms_data:
+  nodered_sa_fms_data:
+
+networks:
+  se4iot-SA-FMS-network:
+    name: se4iot-SA-FMS-network
+    driver: bridge
