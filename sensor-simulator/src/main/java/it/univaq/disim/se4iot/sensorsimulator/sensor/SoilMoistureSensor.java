@@ -1,7 +1,7 @@
-package it.univaq.disim.sensor;
+package it.univaq.disim.se4iot.sensorsimulator.sensor;
 
-import it.univaq.disim.world.ClimateContext;
-import it.univaq.disim.world.WeatherCondition;
+import it.univaq.disim.se4iot.sensorsimulator.world.ClimateContext;
+import it.univaq.disim.se4iot.sensorsimulator.world.WeatherCondition;
 
 public class SoilMoistureSensor extends AbstractSensor<Float> {
     public SoilMoistureSensor() {

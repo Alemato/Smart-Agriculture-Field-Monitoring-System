@@ -1,4 +1,4 @@
-package it.univaq.disim.sensor;
+package it.univaq.disim.se4iot.sensorsimulator.sensor;
 
 public abstract class AbstractSensor<T> implements Sensor<T> {
     private String name;

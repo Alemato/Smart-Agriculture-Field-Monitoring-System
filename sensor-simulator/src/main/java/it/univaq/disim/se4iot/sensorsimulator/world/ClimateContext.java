@@ -1,4 +1,4 @@
-package it.univaq.disim.world;
+package it.univaq.disim.se4iot.sensorsimulator.world;
 
 public class ClimateContext {
     private WeatherCondition weatherCondition;
