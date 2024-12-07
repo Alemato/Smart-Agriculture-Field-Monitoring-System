@@ -1,30 +1,58 @@
 package it.univaq.disim.se4iot.sensorsimulator;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import it.univaq.disim.se4iot.sensorsimulator.domain.FieldConfig;
+import it.univaq.disim.se4iot.sensorsimulator.domain.SimulationConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 @Slf4j
 @Component
 public class MqttGateway {
-    @ServiceActivator(inputChannel = "inputChannelTopic1")
-    public void handleTopic1(String payload) {
-        log.info("Handler Topic1: {}", payload);
+    private final MqttPublisher mqttPublisher;
+    private final ObjectMapper objectMapper;
+
+    public MqttGateway(MqttPublisher mqttPublisher, ObjectMapper objectMapper) {
+        this.mqttPublisher = mqttPublisher;
+        this.objectMapper = objectMapper;
     }
 
-    @ServiceActivator(inputChannel = "inputChannelTopic2")
-    public void handleTopic2(String payload) {
+    @ServiceActivator(inputChannel = "inputChannelSimulationConfig")
+    public void handleSimulationConfig(Message<?> message) {
+        try {
+            if (message.getPayload() instanceof byte[] bPayload) {
+                String decodedPayload = new String(bPayload, StandardCharsets.UTF_8);
+                log.info("Decoded payload: {}", decodedPayload);
+
+                SimulationConfig config = objectMapper.readValue(decodedPayload, SimulationConfig.class);
+                log.info("Configurazione ricevuta: Clima iniziale = {}", config.initialWeather());
+                for (FieldConfig field : config.fields()) {
+                    log.info("Campo agricolo configurato: {}", field);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Failed to process simulation config: {}", e.getMessage(), e);
+        }
+    }
+
+    @ServiceActivator(inputChannel = "inputChannelSimulationUpdate")
+    public void handleSimulationUpdate(String payload) {
         log.info("Handler Topic2: {}", payload);
     }
 
-    @ServiceActivator(inputChannel = "inputChannelTopic3")
-    public void handleTopic3(String payload) {
+    @ServiceActivator(inputChannel = "inputChannelSimulationStart")
+    public void handleSimulationStart(String payload) {
         log.info("Handler Topic3: {}", payload);
     }
 
-    @ServiceActivator(inputChannel = "inputChannelTopic4")
-    public void handleTopic4(String payload) {
+    @ServiceActivator(inputChannel = "inputChannelSimulationStop")
+    public void handleSimulationStop(String payload) {
         log.info("Handler Topic4: {}", payload);
     }
 

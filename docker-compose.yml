@@ -7,8 +7,8 @@ services:
     ports:
       - "1883:1883"
     volumes:
-      - ./mosquitto/config:/mosquitto/config
       - mosquitto_sa_fms_data:/mosquitto
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
     networks:
       - se4iot-SA-FMS-network
     # restart: always

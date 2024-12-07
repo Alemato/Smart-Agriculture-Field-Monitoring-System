@@ -1,5 +1,9 @@
 package it.univaq.disim.se4iot.sensorsimulator.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import it.univaq.disim.se4iot.sensorsimulator.domain.FieldConfig;
+import it.univaq.disim.se4iot.sensorsimulator.domain.SimulationConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.mqttv5.client.MqttAsyncClient;
 import org.eclipse.paho.mqttv5.client.MqttConnectionOptions;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +18,7 @@ import org.springframework.integration.router.HeaderValueRouter;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 
+@Slf4j
 @Configuration
 public class MqttConfiguration {
     private final MqttProperties mqttProperties;
@@ -52,12 +57,17 @@ public class MqttConfiguration {
         return new DirectChannel();
     }
 
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
     // Adapter per sottoscriversi ai topic in ingresso
     @Bean
     public MessageProducer inbound() {
         Mqttv5PahoMessageDrivenChannelAdapter adapter = new Mqttv5PahoMessageDrivenChannelAdapter(
                 mqttv5ClientManager(),
-                "topic/ingresso1", "topic/ingresso2", "topic/ingresso3", "topic/ingresso4"
+                "sensors/simulation/config", "sensors/simulation/update", "sensors/simulation/start", "sensors/simulation/stop"
         );
         adapter.setOutputChannel(mqttInputChannel());
         adapter.setErrorChannel(errorChannel());
@@ -69,31 +79,31 @@ public class MqttConfiguration {
     @ServiceActivator(inputChannel = "mqttInputChannel")
     public HeaderValueRouter router() {
         HeaderValueRouter router = new HeaderValueRouter("mqtt_receivedTopic");
-        router.setChannelMapping("topic/ingresso1", "inputChannelTopic1");
-        router.setChannelMapping("topic/ingresso2", "inputChannelTopic2");
-        router.setChannelMapping("topic/ingresso3", "inputChannelTopic3");
-        router.setChannelMapping("topic/ingresso4", "inputChannelTopic4");
+        router.setChannelMapping("sensors/simulation/config", "inputChannelSimulationConfig");
+        router.setChannelMapping("sensors/simulation/update", "inputChannelSimulationUpdate");
+        router.setChannelMapping("sensors/simulation/start", "inputChannelSimulationStart");
+        router.setChannelMapping("sensors/simulation/stop", "inputChannelSimulationStop");
         return router;
     }
 
     // Canali separati per ogni topic
     @Bean
-    public MessageChannel inputChannelTopic1() {
+    public MessageChannel inputChannelSimulationConfig() {
         return new DirectChannel();
     }
 
     @Bean
-    public MessageChannel inputChannelTopic2() {
+    public MessageChannel inputChannelSimulationUpdate() {
         return new DirectChannel();
     }
 
     @Bean
-    public MessageChannel inputChannelTopic3() {
+    public MessageChannel inputChannelSimulationStart() {
         return new DirectChannel();
     }
 
     @Bean
-    public MessageChannel inputChannelTopic4() {
+    public MessageChannel inputChannelSimulationStop() {
         return new DirectChannel();
     }
 
@@ -106,7 +116,7 @@ public class MqttConfiguration {
     // Handler per pubblicare i messaggi sui topic in uscita
     @Bean
     @ServiceActivator(inputChannel = "mqttOutboundChannel")
-    public MessageHandler mqttOutbound(){
+    public MessageHandler mqttOutbound() {
         Mqttv5PahoMessageHandler handler = new Mqttv5PahoMessageHandler(mqttv5ClientManager());
         handler.setAsync(true);
         return handler;
