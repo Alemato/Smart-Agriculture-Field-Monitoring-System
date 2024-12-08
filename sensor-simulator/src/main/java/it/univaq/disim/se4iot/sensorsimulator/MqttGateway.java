@@ -1,6 +1,5 @@
 package it.univaq.disim.se4iot.sensorsimulator;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.univaq.disim.se4iot.sensorsimulator.domain.FieldConfig;
 import it.univaq.disim.se4iot.sensorsimulator.domain.SimulationConfig;
@@ -10,17 +9,18 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 
 @Slf4j
 @Component
 public class MqttGateway {
     private final MqttPublisher mqttPublisher;
     private final ObjectMapper objectMapper;
+    private final Simulation simulation;
 
-    public MqttGateway(MqttPublisher mqttPublisher, ObjectMapper objectMapper) {
+    public MqttGateway(MqttPublisher mqttPublisher, ObjectMapper objectMapper, Simulation simulation) {
         this.mqttPublisher = mqttPublisher;
         this.objectMapper = objectMapper;
+        this.simulation = simulation;
     }
 
     @ServiceActivator(inputChannel = "inputChannelSimulationConfig")
@@ -35,6 +35,7 @@ public class MqttGateway {
                 for (FieldConfig field : config.fields()) {
                     log.info("Campo agricolo configurato: {}", field);
                 }
+
             }
         } catch (Exception e) {
             log.error("Failed to process simulation config: {}", e.getMessage(), e);
@@ -47,13 +48,15 @@ public class MqttGateway {
     }
 
     @ServiceActivator(inputChannel = "inputChannelSimulationStart")
-    public void handleSimulationStart(String payload) {
-        log.info("Handler Topic3: {}", payload);
+    public void handleSimulationStart(Message<?> message) {
+        log.info("Ricevuta Richiesta di avvio simulazione!");
+        simulation.startSimulation();
     }
 
     @ServiceActivator(inputChannel = "inputChannelSimulationStop")
-    public void handleSimulationStop(String payload) {
-        log.info("Handler Topic4: {}", payload);
+    public void handleSimulationStop(Message<?> message) {
+        log.info("Ricevuta Richiesta di Arresto della simulazione!");
+        simulation.stopSimulation();
     }
 
     @ServiceActivator(inputChannel = "errorChannel")
