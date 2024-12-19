@@ -1,3 +1,5 @@
+version: '3.8'
+
 name: Smart-Agriculture-Field-Monitoring-System
 
 services:
@@ -21,7 +23,7 @@ services:
     container_name: node-red-SA-FMS
     environment:
       - TZ=Europe/Amsterdam
-      - BOT_TOKEN=TestBOT
+      - BOT_TOKEN=<TELEGRAMBOT TOKEN HERE PLEASE!>
     ports:
       - "1880:1880" # Porta web di Node-RED
     volumes:
