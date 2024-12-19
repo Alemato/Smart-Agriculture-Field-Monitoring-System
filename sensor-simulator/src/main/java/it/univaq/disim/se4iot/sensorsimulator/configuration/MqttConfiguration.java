@@ -1,8 +1,6 @@
 package it.univaq.disim.se4iot.sensorsimulator.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.univaq.disim.se4iot.sensorsimulator.domain.FieldConfig;
-import it.univaq.disim.se4iot.sensorsimulator.domain.SimulationConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.mqttv5.client.MqttAsyncClient;
 import org.eclipse.paho.mqttv5.client.MqttConnectionOptions;
@@ -67,7 +65,7 @@ public class MqttConfiguration {
     public MessageProducer inbound() {
         Mqttv5PahoMessageDrivenChannelAdapter adapter = new Mqttv5PahoMessageDrivenChannelAdapter(
                 mqttv5ClientManager(),
-                "sensors/simulation/config", "sensors/simulation/update", "sensors/simulation/start", "sensors/simulation/stop"
+                "sensors/simulation/config", "sensors/simulation/config/get", "sensors/simulation/update", "sensors/simulation/start", "sensors/simulation/stop"
         );
         adapter.setOutputChannel(mqttInputChannel());
         adapter.setErrorChannel(errorChannel());
@@ -79,6 +77,7 @@ public class MqttConfiguration {
     @ServiceActivator(inputChannel = "mqttInputChannel")
     public HeaderValueRouter router() {
         HeaderValueRouter router = new HeaderValueRouter("mqtt_receivedTopic");
+        router.setChannelMapping("sensors/simulation/config/get", "inputChannelGetSimulationConfig");
         router.setChannelMapping("sensors/simulation/config", "inputChannelSimulationConfig");
         router.setChannelMapping("sensors/simulation/update", "inputChannelSimulationUpdate");
         router.setChannelMapping("sensors/simulation/start", "inputChannelSimulationStart");
@@ -89,6 +88,11 @@ public class MqttConfiguration {
     // Canali separati per ogni topic
     @Bean
     public MessageChannel inputChannelSimulationConfig() {
+        return new DirectChannel();
+    }
+
+    @Bean
+    public MessageChannel inputChannelGetSimulationConfig() {
         return new DirectChannel();
     }
 

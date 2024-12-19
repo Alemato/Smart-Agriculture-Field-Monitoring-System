@@ -10,7 +10,7 @@ public class RainfallSensor extends AbstractSensor<Float> {
 
     @Override
     public Float getMeasurement(ClimateContext context) {
-        WeatherCondition condition = context.getWeatherCondition();
+        WeatherCondition condition = context.weatherCondition();
         float rainfall = switch (condition) {
             case LIGHT_RAIN -> (float) (Math.random() * 2 + 1); // 1-3 mm
             case MODERATE_RAIN -> (float) (Math.random() * 5 + 3); // 3-8 mm

@@ -14,7 +14,7 @@ public class SoilMoistureSensor extends AbstractSensor<Float> {
 
     @Override
     public Float getMeasurement(ClimateContext context) {
-        WeatherCondition condition = context.getWeatherCondition();
+        WeatherCondition condition = context.weatherCondition();
         float currentValue = getValue() != null ? getValue() : 50.0f; // Valore iniziale
         switch (condition) {
             case LIGHT_RAIN -> currentValue += (float) (Math.random() * 5); // Piccolo aumento

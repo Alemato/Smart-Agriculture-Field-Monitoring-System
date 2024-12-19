@@ -3,10 +3,11 @@ package it.univaq.disim.se4iot.sensorsimulator;
 import it.univaq.disim.se4iot.sensorsimulator.domain.FieldConfig;
 import it.univaq.disim.se4iot.sensorsimulator.domain.SensorsConfig;
 import it.univaq.disim.se4iot.sensorsimulator.domain.SimulationConfig;
+import it.univaq.disim.se4iot.sensorsimulator.domain.UpdateSimulationCondition;
 import it.univaq.disim.se4iot.sensorsimulator.sensor.*;
 import it.univaq.disim.se4iot.sensorsimulator.world.ClimateContext;
 import it.univaq.disim.se4iot.sensorsimulator.world.WeatherCondition;
-import lombok.Data;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -16,9 +17,9 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
-@Data
 @Component
 public class Simulation {
+
     public static final int DEFAULT_INTERVAL_SIMULATION = 5000;
     public static final String SOIL_MOISTURE_SENSOR = "soilMoisture";
     public static final String TEMPERATURE_SENSOR = "temperature";
@@ -27,13 +28,12 @@ public class Simulation {
     public static final String HUMIDITY_SENSOR = "humidity";
     public static final String RAIN_SENSOR = "rain";
 
-    // Config globale immutabile
+    @Getter
     private volatile SimulationConfig config;
-    // Clima unico per tutti i campi
+    @Getter
     private volatile ClimateContext climateContext;
 
     private final AtomicBoolean simulationStarted = new AtomicBoolean(false);
-
     private final MqttPublisher mqttPublisher;
     private final ScheduledExecutorService scheduler;
     private final Map<Integer, ScheduledFuture<?>> taskMap = new ConcurrentHashMap<>();
@@ -46,16 +46,17 @@ public class Simulation {
     }
 
     private SimulationConfig initializeDefaultSimulation() {
-        SensorsConfig sensorsConfig = new SensorsConfig(true, true, true, true, true, true);
-        FieldConfig field1 = new FieldConfig(1, sensorsConfig, DEFAULT_INTERVAL_SIMULATION);
-        FieldConfig field2 = new FieldConfig(2, sensorsConfig, DEFAULT_INTERVAL_SIMULATION);
-        return new SimulationConfig(climateContext.getWeatherCondition(), List.of(field1, field2));
+        final SensorsConfig sensorsConfig = new SensorsConfig(true, true, true, true, true, true);
+        final FieldConfig field1 = new FieldConfig(1, sensorsConfig);
+        final FieldConfig field2 = new FieldConfig(2, sensorsConfig);
+        return new SimulationConfig(climateContext.weatherCondition(), List.of(field1, field2), DEFAULT_INTERVAL_SIMULATION);
     }
 
     public void startSimulation() {
         if (simulationStarted.compareAndSet(false, true)) {
+            // Pianifica i task per ogni campo in base all'intervallo attuale
             for (FieldConfig field : config.fields()) {
-                scheduleFieldTask(field);
+                scheduleFieldTask(field, config.interval());
             }
             log.info("Simulazione avviata con successo.");
         } else {
@@ -63,23 +64,24 @@ public class Simulation {
         }
     }
 
-    private void scheduleFieldTask(FieldConfig field) {
-        ScheduledFuture<?> task = scheduler.scheduleAtFixedRate(
+    private void scheduleFieldTask(FieldConfig field, int interval) {
+        final ScheduledFuture<?> task = scheduler.scheduleAtFixedRate(
                 () -> simulateFieldMeasurement(field),
                 0,
-                field.interval(),
+                interval,
                 TimeUnit.MILLISECONDS
         );
         taskMap.put(field.fieldId(), task);
     }
 
     private void simulateFieldMeasurement(FieldConfig field) {
-        ClimateContext localContext = climateContext; // Lettura volatile
-        log.info("Simulazione in corso per il campo {} con condizioni climatiche: {}",
-                field.fieldId(), localContext.getWeatherCondition());
+        final ClimateContext localContext = climateContext; // Lettura volatile
+        log.debug("Simulazione in corso per il campo {} con condizioni climatiche: {}",
+                field.fieldId(), localContext.weatherCondition());
 
-        SensorsConfig sensors = field.sensors();
+        final SensorsConfig sensors = field.sensors();
         try {
+            // Esegue la lettura dei sensori abilitati
             if (sensors.soilMoisture())
                 sendMeasurement(field.fieldId(), SOIL_MOISTURE_SENSOR, new SoilMoistureSensor().getMeasurement(localContext).toString());
             if (sensors.temperature())
@@ -92,82 +94,91 @@ public class Simulation {
                 sendMeasurement(field.fieldId(), HUMIDITY_SENSOR, new RelativeHumiditySensor().getMeasurement(localContext).toString());
             if (sensors.rain())
                 sendMeasurement(field.fieldId(), RAIN_SENSOR, new RainfallSensor().getMeasurement(localContext).toString());
-
         } catch (Exception e) {
-            log.error("Errore durante la simulazione per il campo {}: {}", field.fieldId(), e.getMessage());
+            log.error("Errore durante la simulazione per il campo {}: {}", field.fieldId(), e.getMessage(), e);
         }
     }
 
     private void sendMeasurement(int fieldId, String sensorType, String measurement) {
-        mqttPublisher.publish("test/field" + fieldId + "/" + sensorType, measurement);
+        mqttPublisher.publish("agriculture/field" + fieldId + "/" + sensorType, measurement);
         log.info("Dato inviato via MQTT: campo {}, sensore {}, valore: {}", fieldId, sensorType, measurement);
     }
 
     /**
-     * Aggiorna il clima globale e, se specificato, l'intervallo di un singolo campo.
-     * Il clima è unico, quindi l'aggiornamento influisce su tutti i campi, ma
-     * l'intervallo cambiato riguarda solo il `fieldId` selezionato.
+     * Aggiorna il clima globale e l'intervallo globale. Il clima resta unico per tutti i campi.
+     * Se l'intervallo cambia, i task vengono ricreati; in caso contrario, restano invariati.
+     * @param simulationConditions condizioni aggiornate
      */
-    public void updateSimulation(WeatherCondition weatherCondition, int interval, int fieldId) {
+    public void updateSimulation(UpdateSimulationCondition simulationConditions) {
         if (!simulationStarted.get()) {
             log.warn("La simulazione non è in corso. Non è possibile aggiornare i settaggi.");
             return;
         }
 
-        // Aggiorno il clima globale in modo immutabile
-        ClimateContext oldContext = climateContext;
-        this.climateContext = new ClimateContext(
-                weatherCondition,
-                oldContext.getExternalTemperature(),
-                oldContext.getRelativeHumidity()
+        final ClimateContext oldContext = climateContext;
+
+        // Aggiorno il clima con eventuali valori nuovi, altrimenti uso quelli vecchi
+        final ClimateContext newClimate = new ClimateContext(
+                simulationConditions.weather() != null ? simulationConditions.weather() : oldContext.weatherCondition(),
+                simulationConditions.externalTemperature() != null ? simulationConditions.externalTemperature() : oldContext.externalTemperature(),
+                simulationConditions.relativeHumidity() != null ? simulationConditions.relativeHumidity() : oldContext.relativeHumidity()
         );
 
-        // Aggiorno la config con il nuovo intervallo per il campo specificato
-        List<FieldConfig> updatedFields = config.fields().stream()
-                .map(field -> field.fieldId() == fieldId
-                        ? new FieldConfig(field.fieldId(), field.sensors(), interval)
-                        : field)
-                .toList();
+        final int oldInterval = config.interval();
+        final int newInterval = simulationConditions.interval() != null ? simulationConditions.interval() : oldInterval;
 
-        this.config = new SimulationConfig(this.climateContext.getWeatherCondition(), updatedFields);
+        // Creo una nuova config immutabile con le stesse fields e il nuovo (o vecchio) intervallo
+        final SimulationConfig newConfig = new SimulationConfig(newClimate.weatherCondition(), config.fields(), newInterval);
 
-        // Aggiorno la schedulazione solo per il campo interessato
-        ScheduledFuture<?> oldTask = taskMap.remove(fieldId);
-        if (oldTask != null) {
-            oldTask.cancel(false);
+        // Aggiorno gli stati volatili
+        this.climateContext = newClimate;
+        this.config = newConfig;
+
+        // Ricreo i task solo se l'intervallo è cambiato
+        rescheduleTasksIfNeeded(oldInterval, newInterval);
+
+        log.info("Settaggi aggiornati: clima {}, intervallo {} ms.", newClimate.weatherCondition(), newInterval);
+    }
+
+    /**
+     * Se l'intervallo cambia, ferma tutti i task e li ricrea con il nuovo intervallo.
+     */
+    private void rescheduleTasksIfNeeded(int oldInterval, int newInterval) {
+        if (newInterval != oldInterval) {
+            stopTasks(); // Cancella tutti i task correnti
+            // Ricrea i task con il nuovo intervallo
+            for (FieldConfig field : config.fields()) {
+                scheduleFieldTask(field, newInterval);
+            }
+            log.debug("Task rischedulati con intervallo aggiornato a {} ms.", newInterval);
+        } else {
+            log.debug("L'intervallo non è cambiato, nessuna rischedulazione dei task necessaria.");
         }
-
-        // Ricreo il task con il nuovo intervallo
-        updatedFields.stream()
-                .filter(field -> field.fieldId() == fieldId)
-                .findFirst()
-                .ifPresent(this::scheduleFieldTask);
-
-        log.info("Settaggi aggiornati: condizione meteo globale {}, intervallo per campo {} a {} ms.",
-                weatherCondition, fieldId, interval);
     }
 
     /**
      * Cambia l'intera configurazione. Se la simulazione era in corso, la ferma,
-     * cambia la config, aggiorna il clima e poi riparte.
+     * aggiorna il clima con la nuova condizione meteo e poi riparte.
      */
     public void changeConfiguration(SimulationConfig newConfig) {
-        boolean wasRunning = simulationStarted.compareAndSet(true, false);
+        final boolean wasRunning = simulationStarted.compareAndSet(true, false);
         if (wasRunning) {
             stopTasks();
         }
 
-        // Manteniamo stessi valori di temperatura e umidità, ma aggiorniamo il clima con la nuova condizione meteo
-        ClimateContext oldContext = climateContext;
-        this.climateContext = new ClimateContext(
+        // Aggiorno il clima mantenendo T e umidità dal vecchio contesto
+        final ClimateContext oldContext = climateContext;
+        final ClimateContext newClimate = new ClimateContext(
                 newConfig.initialWeather(),
-                oldContext.getExternalTemperature(),
-                oldContext.getRelativeHumidity()
+                oldContext.externalTemperature(),
+                oldContext.relativeHumidity()
         );
 
+        this.climateContext = newClimate;
         this.config = newConfig;
         log.info("Configurazione cambiata: {}", newConfig);
 
+        // Se era in esecuzione, riparti
         if (wasRunning) {
             startSimulation();
         }
@@ -182,10 +193,29 @@ public class Simulation {
         }
     }
 
+    /**
+     * Cancella tutti i task attualmente programmati.
+     */
     private void stopTasks() {
         for (ScheduledFuture<?> task : taskMap.values()) {
             task.cancel(false);
         }
         taskMap.clear();
+    }
+
+    /**
+     * Metodi per eventuale shutdown del pool di thread se necessario.
+     * Chiamare nel contesto corretto se si vuole fermare l'intera applicazione.
+     */
+    public void shutdownScheduler() {
+        scheduler.shutdown();
+        try {
+            if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
+                scheduler.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            scheduler.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 }

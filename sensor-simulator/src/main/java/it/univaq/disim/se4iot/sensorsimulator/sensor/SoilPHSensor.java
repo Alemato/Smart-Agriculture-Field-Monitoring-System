@@ -10,7 +10,7 @@ public class SoilPHSensor extends AbstractSensor<Float> {
 
     @Override
     public Float getMeasurement(ClimateContext context) {
-        WeatherCondition condition = context.getWeatherCondition();
+        WeatherCondition condition = context.weatherCondition();
         float currentValue = getValue() != null ? getValue() : 6.5f; // Valore medio
         switch (condition) {
             case LIGHT_RAIN, MODERATE_RAIN -> currentValue -= (float) (Math.random() * 0.1); // Lieve acidificazione

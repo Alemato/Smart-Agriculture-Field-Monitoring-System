@@ -6,6 +6,7 @@ import it.univaq.disim.se4iot.sensorsimulator.world.WeatherCondition;
 import java.util.List;
 
 public record SimulationConfig(
-        @JsonProperty("initialWeather") WeatherCondition initialWeather,
-        @JsonProperty("fields") List<FieldConfig> fields) {
+        @JsonProperty(value = "initialWeather", required = true) WeatherCondition initialWeather,
+        @JsonProperty(value = "fields", required = true) List<FieldConfig> fields,
+        @JsonProperty(value = "interval", required = true) int interval) {
 }

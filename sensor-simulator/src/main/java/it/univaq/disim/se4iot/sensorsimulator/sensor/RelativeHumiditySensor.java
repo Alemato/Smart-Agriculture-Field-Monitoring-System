@@ -10,8 +10,8 @@ public class RelativeHumiditySensor extends AbstractSensor<Float> {
 
     @Override
     public Float getMeasurement(ClimateContext context) {
-        WeatherCondition condition = context.getWeatherCondition();
-        float humidity = context.getRelativeHumidity();
+        WeatherCondition condition = context.weatherCondition();
+        float humidity = context.relativeHumidity();
         switch (condition) {
             case SUNNY -> humidity -= (float) (Math.random() * 5); // Diminuzione
             case CLOUDY -> humidity += (float) (Math.random() * 1); // Leggero aumento

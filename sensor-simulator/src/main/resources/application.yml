@@ -1,4 +1,7 @@
-spring.application.name: sensor-simulator
+spring.application:
+  name: Sensor Simulator
+  version: 1.0.0
+
 mqtt:
   broker-url: ${BROKER-PROTOCOL:tcp}://${BROKER-URL:localhost}:${BROKER-PORT:1883}
   client-id: ${MQTT-CLIENT-ID:sensor-simulator}
