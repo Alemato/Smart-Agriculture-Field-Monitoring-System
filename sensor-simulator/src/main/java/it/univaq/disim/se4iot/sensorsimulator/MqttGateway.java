@@ -42,8 +42,12 @@ public class MqttGateway {
     }
 
     @ServiceActivator(inputChannel = "inputChannelGetSimulationConfig")
-    public void handleGetSimulationUpdate(String payload) {
+    public void handleGetSimulation(String payload) {
         log.info("Ricevuto Messaggio da sensors/simulation/config/get: {}", payload);
+        getSimulation();
+    }
+
+    private void getSimulation(){
         try {
             SimulationConfig config = simulation.getConfig();
             ClimateContext climateContext = simulation.getClimateContext();
@@ -64,6 +68,7 @@ public class MqttGateway {
                 UpdateSimulationCondition updateSimulationCondition = objectMapper.readValue(decodedPayload, UpdateSimulationCondition.class);
                 log.info("Aggiornamento Condizioni di Simulazione Ricevuta: {}", updateSimulationCondition);
                 simulation.updateSimulation(updateSimulationCondition);
+                getSimulation();
             }
         } catch (Exception e) {
             log.error(FAIL_PROCESS_MESSAGE, e.getMessage(), e);

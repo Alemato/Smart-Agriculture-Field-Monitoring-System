@@ -80,22 +80,43 @@ public class Simulation {
                 field.fieldId(), localContext.weatherCondition());
 
         final SensorsConfig sensors = field.sensors();
+        Float measuredTemperature = null;
+        Float measuredHumidity = null;
         try {
             // Esegue la lettura dei sensori abilitati
             if (sensors.soilMoisture())
                 sendMeasurement(field.fieldId(), SOIL_MOISTURE_SENSOR, new SoilMoistureSensor().getMeasurement(localContext).toString());
-            if (sensors.temperature())
-                sendMeasurement(field.fieldId(), TEMPERATURE_SENSOR, new TemperatureSensor().getMeasurement(localContext).toString());
+            if (sensors.temperature()) {
+                measuredTemperature = new TemperatureSensor().getMeasurement(localContext);
+                sendMeasurement(field.fieldId(), TEMPERATURE_SENSOR, measuredTemperature.toString());
+            }
             if (sensors.ph())
                 sendMeasurement(field.fieldId(), PH_SENSOR, new SoilPHSensor().getMeasurement(localContext).toString());
             if (sensors.salinity())
                 sendMeasurement(field.fieldId(), SALINITY_SENSOR, new WaterSalinitySensor().getMeasurement(localContext).toString());
-            if (sensors.humidity())
-                sendMeasurement(field.fieldId(), HUMIDITY_SENSOR, new RelativeHumiditySensor().getMeasurement(localContext).toString());
+            if (sensors.humidity()) {
+                measuredHumidity = new RelativeHumiditySensor().getMeasurement(localContext);
+                sendMeasurement(field.fieldId(), HUMIDITY_SENSOR, measuredHumidity.toString());
+            }
             if (sensors.rain())
                 sendMeasurement(field.fieldId(), RAIN_SENSOR, new RainfallSensor().getMeasurement(localContext).toString());
+
         } catch (Exception e) {
             log.error("Errore durante la simulazione per il campo {}: {}", field.fieldId(), e.getMessage(), e);
+        }
+
+        // Se abbiamo ottenuto misure per temperatura e umidità, aggiorniamo il contesto climatico
+        if (measuredTemperature != null || measuredHumidity != null) {
+            float newTemp = measuredTemperature != null ? measuredTemperature : localContext.externalTemperature();
+            float newHum = measuredHumidity != null ? measuredHumidity : localContext.relativeHumidity();
+
+            climateContext = new ClimateContext(
+                    localContext.weatherCondition(),
+                    newTemp,
+                    newHum
+            );
+
+            log.info("Contesto climatico aggiornato: T={}°C, RH={}%", newTemp, newHum);
         }
     }
 
@@ -110,11 +131,6 @@ public class Simulation {
      * @param simulationConditions condizioni aggiornate
      */
     public void updateSimulation(UpdateSimulationCondition simulationConditions) {
-        if (!simulationStarted.get()) {
-            log.warn("La simulazione non è in corso. Non è possibile aggiornare i settaggi.");
-            return;
-        }
-
         final ClimateContext oldContext = climateContext;
 
         // Aggiorno il clima con eventuali valori nuovi, altrimenti uso quelli vecchi
@@ -134,8 +150,13 @@ public class Simulation {
         this.climateContext = newClimate;
         this.config = newConfig;
 
-        // Ricreo i task solo se l'intervallo è cambiato
-        rescheduleTasksIfNeeded(oldInterval, newInterval);
+        // Controllo se la simulazione è attiva
+        if (simulationStarted.get()) {
+            // Rischedula i task se necessario solo se la simulazione è in corso
+            rescheduleTasksIfNeeded(oldInterval, newInterval);
+        } else {
+            log.warn("La simulazione è ferma. Settaggi aggiornati ma la simulazione non verrà avviata.");
+        }
 
         log.info("Settaggi aggiornati: clima {}, intervallo {} ms.", newClimate.weatherCondition(), newInterval);
     }
@@ -168,13 +189,12 @@ public class Simulation {
 
         // Aggiorno il clima mantenendo T e umidità dal vecchio contesto
         final ClimateContext oldContext = climateContext;
-        final ClimateContext newClimate = new ClimateContext(
+
+        this.climateContext = new ClimateContext(
                 newConfig.initialWeather(),
                 oldContext.externalTemperature(),
                 oldContext.relativeHumidity()
         );
-
-        this.climateContext = newClimate;
         this.config = newConfig;
         log.info("Configurazione cambiata: {}", newConfig);
 
