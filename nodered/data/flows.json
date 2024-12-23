@@ -474,10 +474,10 @@
         "z": "61216a9c9c65a5d3",
         "name": "",
         "command": "/help",
-        "description": "",
-        "registercommand": false,
+        "description": "Show Helper",
+        "registercommand": true,
         "language": "",
-        "scope": "default",
+        "scope": "all_private_chats",
         "bot": "227d6c6a69368223",
         "strict": false,
         "hasresponse": true,
@@ -547,18 +547,18 @@
         "type": "telegram command",
         "z": "61216a9c9c65a5d3",
         "name": "",
-        "command": "/setsimulation",
-        "description": "",
-        "registercommand": false,
+        "command": "/set_simulation",
+        "description": "Set all the settings of the sensor simulator",
+        "registercommand": true,
         "language": "",
-        "scope": "default",
+        "scope": "all_private_chats",
         "bot": "227d6c6a69368223",
         "strict": false,
         "hasresponse": true,
         "useregex": false,
         "removeregexcommand": false,
         "outputs": 2,
-        "x": 290,
+        "x": 300,
         "y": 260,
         "wires": [
             [
@@ -608,8 +608,8 @@
         "type": "function",
         "z": "61216a9c9c65a5d3",
         "name": "Salva IdMessaggio nel ChatContex",
-        "func": "var chatId = msg.payload.chatId;\nif (!chatId || typeof chatId !== \"number\") {\n    node.error(\"chatId non valido: \" + chatId);\n    return null;\n}\n\nvar chatContextKey = \"chat_\" + chatId;\nvar chatContext = flow.get(chatContextKey) || {};\n\nchatContext.messageId = msg.payload.sentMessageId;\n\nflow.set(chatContextKey, chatContext);\n\n// Debug\nnode.warn(\"Salvato nel Flow: chatContextKey=\" + chatContextKey + \", contenuto=\" + JSON.stringify(chatContext));\n\nreturn msg;\n",
-        "outputs": 1,
+        "func": "var chatId = msg.payload.chatId;\nif (!chatId || typeof chatId !== \"number\") {\n    node.error(\"chatId non valido: \" + chatId);\n    return null;\n}\n\nvar chatContextKey = \"chat_\" + chatId;\nvar chatContext = flow.get(chatContextKey) || {};\n\nchatContext.messageId = msg.payload.sentMessageId;\n\nflow.set(chatContextKey, chatContext);\n\n// Debug\nnode.warn(\"Salvato nel Flow: chatContextKey=\" + chatContextKey + \", contenuto=\" + JSON.stringify(chatContext));\n",
+        "outputs": 0,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
@@ -617,9 +617,7 @@
         "libs": [],
         "x": 1020,
         "y": 260,
-        "wires": [
-            []
-        ]
+        "wires": []
     },
     {
         "id": "d39e0c4caf56bc9c",
@@ -633,7 +631,7 @@
         "y": 1100,
         "wires": [
             [
-                "6ee01010c318fdfd"
+                "3d43db9bef4257a9"
             ]
         ]
     },
@@ -651,34 +649,40 @@
                 "vt": "str"
             },
             {
-                "t": "cont",
-                "v": "S0",
-                "vt": "str"
+                "t": "regex",
+                "v": "^S0",
+                "vt": "str",
+                "case": false
             },
             {
-                "t": "cont",
-                "v": "S1",
-                "vt": "str"
+                "t": "regex",
+                "v": "^S1",
+                "vt": "str",
+                "case": false
             },
             {
-                "t": "cont",
-                "v": "S2",
-                "vt": "str"
+                "t": "regex",
+                "v": "^S2",
+                "vt": "str",
+                "case": false
             },
             {
-                "t": "cont",
-                "v": "S3",
-                "vt": "str"
+                "t": "regex",
+                "v": "^S3",
+                "vt": "str",
+                "case": false
             },
             {
-                "t": "cont",
-                "v": "S4",
-                "vt": "str"
+                "t": "regex",
+                "v": "^S4",
+                "vt": "str",
+                "case": false
             },
             {
-                "t": "cont",
-                "v": "S5",
-                "vt": "str"
+                "t": "regex",
+                "v": "^S5",
+                "vt": "str",
+                "case": false
             },
             {
                 "t": "else"
@@ -687,7 +691,7 @@
         "checkall": "false",
         "repair": false,
         "outputs": 8,
-        "x": 500,
+        "x": 680,
         "y": 1100,
         "wires": [
             [
@@ -719,14 +723,14 @@
         "type": "function",
         "z": "61216a9c9c65a5d3",
         "name": "Keyboard SetSimulation Step 1",
-        "func": "var chatId = msg.payload.chatId;\nvar chatContextKey = \"chat_\" + chatId;\n\nvar chatContext = flow.get(chatContextKey);\n\nif (!chatContext || !chatContext.messageId) {\n    node.error(\"Message ID non trovato nel Flow Context per chatId: \" + chatId);\n    return null;\n}\n// ID del messaggio con la tastiera inline\n\n// Recupera la scelta dell'utente\nvar userChoice = msg.payload.content; // Es. \"FOO YES\" o \"FOO NO\"\n\n// Prepara il nuovo contenuto del messaggio basato sulla scelta\nvar newText;\nif (userChoice === \"S0 YES\") {\n    newText = \"Great, let's get started!!! \\r\\nHow many agricultural fields do you want to simulate this time?\";\n} else if (userChoice === \"S0 NO\") {\n    newText = \"OK, you can reuse the /setsimulation command when you are ready to change the simulation settings!\";\n} else {\n    newText = \"Invalid choice!\";\n}\n\n// Prepara il messaggio per modificare il testo e rimuovere la tastiera inline\nvar reply_markup_empty = JSON.stringify({\n    \"inline_keyboard\": [] // Rimuove la tastiera inline\n});\nvar reply_markup = JSON.stringify({\n    \"inline_keyboard\": [[\n        {\n            \"text\": \"1️⃣\",\n            \"callback_data\": \"S1 1\"\n            },\n            {\n            \"text\": \"2️⃣\",\n            \"callback_data\": \"S1 2\"\n            },\n            {\n            \"text\": \"3️⃣\",\n            \"callback_data\": \"S1 3\"\n            }\n        ],\n        [\n            {\n            \"text\": \"4️⃣\",\n            \"callback_data\": \"S1 4\"\n            },\n            {\n            \"text\": \"5️⃣\",\n            \"callback_data\": \"S1 5\"\n            },\n            {\n            \"text\": \"6️⃣\",\n            \"callback_data\": \"S1 6\"\n            }\n            ],\n            [{\n                \"text\": \"❌   ABORT   ❌\",\n                \"callback_data\": \"SCancel\"\n            }\n    ]] // Modifica la tastiera\n});\n\nif (userChoice === \"S0 YES\") {\n    var options = {\n        chat_id: msg.payload.chatId,\n        reply_markup: reply_markup,\n        message_id: chatContext.messageId\n    };\n    msg.payload.type = 'editMessageText';\n    msg.payload.content = newText;\n    msg.payload.options = options;\n} else {\n    var options = {\n        chat_id: msg.payload.chatId,\n        reply_markup: reply_markup_empty,\n        message_id: chatContext.messageId\n    };\n    msg.payload.type = 'editMessageText';\n    msg.payload.content = newText;\n    msg.payload.options = options;\n}\n\nreturn msg;\n",
+        "func": "var chatId = msg.payload.chatId;\nvar chatContextKey = \"chat_\" + chatId;\n\nvar chatContext = flow.get(chatContextKey);\n\nif (!chatContext || !chatContext.messageId) {\n    node.error(\"Message ID non trovato nel Flow Context per chatId: \" + chatId);\n    return null;\n}\n// ID del messaggio con la tastiera inline\n\n// Recupera la scelta dell'utente\nvar userChoice = msg.payload.content; // Es. \"FOO YES\" o \"FOO NO\"\n\n// Prepara il nuovo contenuto del messaggio basato sulla scelta\nvar newText;\nif (userChoice === \"S0 YES\") {\n    newText = \"Great, let's get started!!! \\r\\nHow many agricultural fields do you want to simulate this time?\";\n} else if (userChoice === \"S0 NO\") {\n    newText = \"OK, you can reuse the /setsimulation command when you are ready to change the simulation settings!\";\n} else {\n    newText = \"Invalid choice!\";\n}\n\n// Prepara il messaggio per modificare il testo e rimuovere la tastiera inline\nvar reply_markup_empty = JSON.stringify({\n    \"inline_keyboard\": [] // Rimuove la tastiera inline\n});\nvar reply_markup = JSON.stringify({\n    \"inline_keyboard\": [[\n        {\n            \"text\": \"1️⃣\",\n            \"callback_data\": \"S1 1\"\n            },\n            {\n            \"text\": \"2️⃣\",\n            \"callback_data\": \"S1 2\"\n            },\n            {\n            \"text\": \"3️⃣\",\n            \"callback_data\": \"S1 3\"\n            }\n        ],\n        [\n            {\n            \"text\": \"4️⃣\",\n            \"callback_data\": \"S1 4\"\n            },\n            {\n            \"text\": \"5️⃣\",\n            \"callback_data\": \"S1 5\"\n            },\n            {\n            \"text\": \"6️⃣\",\n            \"callback_data\": \"S1 6\"\n            }\n            ],\n            [{\n                \"text\": \"❌   ABORT   ❌\",\n                \"callback_data\": \"SCancel\"\n            }\n    ]] // Modifica la tastiera\n});\n\nif (userChoice === \"S0 YES\") {\n    var options = {\n        chat_id: msg.payload.chatId,\n        reply_markup: reply_markup,\n        message_id: chatContext.messageId\n    };\n    msg.payload.type = 'editMessageText';\n    msg.payload.content = newText;\n    msg.payload.options = options;\n} else {\n    var options = {\n        chat_id: msg.payload.chatId,\n        reply_markup: reply_markup_empty,\n        message_id: chatContext.messageId\n    };\n    msg.payload.type = 'editMessageText';\n    msg.payload.content = newText;\n    msg.payload.options = options;\n\n    delete chatContext.messageId;\n    flow.set(chatContextKey, chatContext);\n}\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 790,
+        "x": 970,
         "y": 1040,
         "wires": [
             [
@@ -742,8 +746,8 @@
         "bot": "227d6c6a69368223",
         "haserroroutput": false,
         "outputs": 1,
-        "x": 1430,
-        "y": 1000,
+        "x": 1490,
+        "y": 1140,
         "wires": [
             []
         ]
@@ -753,14 +757,14 @@
         "type": "function",
         "z": "61216a9c9c65a5d3",
         "name": "Abort SetSimulation",
-        "func": "var chatId = msg.payload.chatId;\nvar chatContextKey = \"chat_\" + chatId;\n\nvar chatContext = flow.get(chatContextKey);\n\nif (!chatContext || !chatContext.messageId) {\n    node.error(\"Message ID non trovato nel Flow Context per chatId: \" + chatId);\n    return null;\n}\n\nvar newText = \"OK, you can reuse the /setsimulation command when you are ready to change the simulation settings!\";\n\nvar reply_markup_empty = JSON.stringify({\n    \"inline_keyboard\": [] // Rimuove la tastiera inline se presente\n});\n\nvar options = {\n        chat_id: msg.payload.chatId,\n        reply_markup: reply_markup_empty,\n        message_id: chatContext.messageId\n    };\n\nmsg.payload.type = 'editMessageText';\nmsg.payload.content = newText;\nmsg.payload.options = options;\n\nflow.set(chatContextKey, null);\n\nreturn msg;",
+        "func": "var chatId = msg.payload.chatId;\nvar chatContextKey = \"chat_\" + chatId;\n\nvar chatContext = flow.get(chatContextKey);\n\nif (!chatContext || !chatContext.messageId) {\n    node.error(\"Message ID non trovato nel Flow Context per chatId: \" + chatId);\n    return null;\n}\n\nvar settingSimulationContext = chatContext.settingSimulationContext;\nif (settingSimulationContext){\n    delete chatContext.settingSimulationContext;\n}\n\nvar newText = \"OK, you can reuse the /setsimulation command when you are ready to change the simulation settings!\";\n\nvar reply_markup_empty = JSON.stringify({\n    \"inline_keyboard\": [] // Rimuove la tastiera inline se presente\n});\n\nvar options = {\n        chat_id: msg.payload.chatId,\n        reply_markup: reply_markup_empty,\n        message_id: chatContext.messageId\n    };\n\nmsg.payload.type = 'editMessageText';\nmsg.payload.content = newText;\nmsg.payload.options = options;\n\ndelete chatContext.messageId;\n\nflow.set(chatContextKey, chatContext);\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 760,
+        "x": 940,
         "y": 1000,
         "wires": [
             [
@@ -780,7 +784,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 880,
+        "x": 1060,
         "y": 1080,
         "wires": [
             [
@@ -794,7 +798,7 @@
         "z": "61216a9c9c65a5d3",
         "name": "SET SIMULATION \\n \\n SCancel \\n The SCancel step is used to cancel the process of creating a new setting.\\n \\n S0\\n The S0 step is used to ask the user if they wish to start a new setting.\\n \\n S1\\n Step S1 is for specifying the number of farm fields, between 1 and 6.\\n \\n S2\\n Step S2 allows the user to indicate which sensors are present in each agricultural field.\\n  This step is iterated until the S2 OK or S2 ALL command is received.\\n \\n S2 OK and S2 ALL\\n Steps S2 OK and S2 ALL are used to confirm the selection of sensors for the current agricultural field.\\n \\n S3\\n Step S3 is used to define the starting climatic conditions that will be applied to all agricultural fields in the simulation.\\n \\n S4\\n Step S4 presents a summary of the configuration and requires confirmation to proceed.\\n \\n S5\\n Step S5 concludes the process of creating a new setting by sending it to the simulation server.",
         "info": "# Italiano\n---\n\n# SCancel\nLo step **SCancel** serve per annullare il processo di creazione di un nuovo settaggio.\n\n# S0\nLo step **S0** serve per chiedere all'utente se desidera iniziare un nuovo settaggio.\n\n# S1\nLo step **S1** consente di specificare il numero di campi agricoli, compreso tra 1 e 6.\n\n# S2\nLo step **S2** permette di indicare quali sensori sono presenti in ciascun campo agricolo.\n\nQuesto step viene iterato fino a ricevere il comando **S2 OK** o **S2 ALL**.\n\n# S2 OK e S2 ALL\nGli step **S2 OK** e **S2 ALL** servono per confermare la selezione dei sensori per il campo agricolo corrente.\n\n# S3\nLo step **S3** consente di definire le condizioni climatiche di partenza che saranno applicate a tutti i campi agricoli nella simulazione.\n\n# S4\nLo step **S4** presenta un riepilogo della configurazione e richiede conferma per procedere.\n\n# S5\nLo step **S5** conclude il processo di creazione di un nuovo settaggio, inviandolo al server di simulazione.\n\n<br><br><br>\n\n# English\n---\n# SCancel\nThe **SCancel** step is used to cancel the process of creating a new setting.\n\n# S0\nThe **S0** step is used to ask the user if they wish to start a new setting.\n\n# S1\nStep **S1** is for specifying the number of farm fields, between 1 and 6.\n\n# S2\nStep **S2** allows the user to indicate which sensors are present in each agricultural field.\n\nThis step is iterated until the **S2 OK** or **S2 ALL** command is received.\n\n# S2 OK and S2 ALL\nSteps **S2 OK** and **S2 ALL** are used to confirm the selection of sensors for the current agricultural field.\n\n# S3\nStep **S3** is used to define the starting climatic conditions that will be applied to all agricultural fields in the simulation.\n\n# S4\nStep **S4** presents a summary of the configuration and requires confirmation to proceed.\n\n# S5\nStep **S5** concludes the process of creating a new setting by sending it to the simulation server.",
-        "x": 610,
+        "x": 1010,
         "y": 640,
         "wires": []
     },
@@ -810,7 +814,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1000,
+        "x": 1180,
         "y": 1140,
         "wires": [
             [
@@ -827,14 +831,16 @@
         "propertyType": "msg",
         "rules": [
             {
-                "t": "cont",
-                "v": "S2 OK",
-                "vt": "str"
+                "t": "regex",
+                "v": "^S2 OK",
+                "vt": "str",
+                "case": false
             },
             {
-                "t": "cont",
-                "v": "S2 ALL",
-                "vt": "str"
+                "t": "regex",
+                "v": "^S2 ALL",
+                "vt": "str",
+                "case": false
             },
             {
                 "t": "else"
@@ -843,7 +849,7 @@
         "checkall": "false",
         "repair": false,
         "outputs": 3,
-        "x": 720,
+        "x": 900,
         "y": 1160,
         "wires": [
             [
@@ -869,7 +875,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 980,
+        "x": 1160,
         "y": 1180,
         "wires": [
             [
@@ -889,7 +895,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 770,
+        "x": 950,
         "y": 1260,
         "wires": [
             [
@@ -909,7 +915,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 820,
+        "x": 1000,
         "y": 1320,
         "wires": [
             [
@@ -929,7 +935,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 850,
+        "x": 1030,
         "y": 1380,
         "wires": [
             [
@@ -957,8 +963,8 @@
         "correl": "",
         "expiry": "",
         "broker": "24f8f90e89fb0dcc",
-        "x": 1250,
-        "y": 1400,
+        "x": 1510,
+        "y": 1200,
         "wires": []
     },
     {
@@ -966,19 +972,19 @@
         "type": "telegram command",
         "z": "61216a9c9c65a5d3",
         "name": "",
-        "command": "/currentconfiguration",
-        "description": "",
-        "registercommand": false,
+        "command": "/current_configuration",
+        "description": "Gets the current configuration of the sensor simulator",
+        "registercommand": true,
         "language": "",
-        "scope": "default",
+        "scope": "all_private_chats",
         "bot": "227d6c6a69368223",
         "strict": false,
         "hasresponse": true,
         "useregex": false,
         "removeregexcommand": false,
         "outputs": 2,
-        "x": 310,
-        "y": 1500,
+        "x": 300,
+        "y": 1980,
         "wires": [
             [
                 "770d433fafa65357"
@@ -1000,8 +1006,8 @@
         "correl": "",
         "expiry": "",
         "broker": "24f8f90e89fb0dcc",
-        "x": 860,
-        "y": 1500,
+        "x": 840,
+        "y": 1980,
         "wires": []
     },
     {
@@ -1016,8 +1022,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 560,
-        "y": 1500,
+        "x": 540,
+        "y": 1980,
         "wires": [
             [
                 "567ef0b2ff398543"
@@ -1036,8 +1042,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 640,
-        "y": 1560,
+        "x": 660,
+        "y": 2040,
         "wires": [
             [
                 "d701e4f17b15036c"
@@ -1057,11 +1063,12 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 350,
-        "y": 1560,
+        "x": 330,
+        "y": 2040,
         "wires": [
             [
-                "b3b745631d58c8b3"
+                "b3b745631d58c8b3",
+                "ba983c3736d747e0"
             ]
         ]
     },
@@ -1077,8 +1084,8 @@
         "stream": false,
         "addname": "",
         "property": "payload",
-        "x": 850,
-        "y": 1560,
+        "x": 870,
+        "y": 2040,
         "wires": [
             [
                 "96f922d69769b33b"
@@ -1110,8 +1117,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1000,
-        "y": 1560,
+        "x": 1020,
+        "y": 2040,
         "wires": [
             [
                 "df89c0c6fe3dd603"
@@ -1126,8 +1133,466 @@
         "bot": "227d6c6a69368223",
         "haserroroutput": false,
         "outputs": 1,
-        "x": 1190,
+        "x": 1210,
+        "y": 2040,
+        "wires": [
+            [
+                "d266eb210cfe6155"
+            ]
+        ]
+    },
+    {
+        "id": "ba983c3736d747e0",
+        "type": "function",
+        "z": "61216a9c9c65a5d3",
+        "name": "Saves the current simulation configuration",
+        "func": "var currentConfigKey = \"simulation_configuration\";\nvar currentConfig = flow.get(currentConfigKey) || {};\ncurrentConfig = msg.payload;\nflow.set(currentConfigKey, currentConfig);\n\n// Debug\nnode.warn(\"Salvato nel Flow: currentConfigKey=\" + currentConfigKey + \", contenuto=\" + JSON.stringify(currentConfig));",
+        "outputs": 0,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 680,
+        "y": 2100,
+        "wires": []
+    },
+    {
+        "id": "a77182d7cca55244",
+        "type": "telegram command",
+        "z": "61216a9c9c65a5d3",
+        "name": "",
+        "command": "/update_simulation_condition",
+        "description": "Update the simulation condition",
+        "registercommand": true,
+        "language": "",
+        "scope": "all_private_chats",
+        "bot": "227d6c6a69368223",
+        "strict": false,
+        "hasresponse": true,
+        "useregex": false,
+        "removeregexcommand": false,
+        "outputs": 2,
+        "x": 320,
+        "y": 1920,
+        "wires": [
+            [
+                "5050c4dcd7f3fe92"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "5050c4dcd7f3fe92",
+        "type": "function",
+        "z": "61216a9c9c65a5d3",
+        "name": "keyboard UpdateCondition (Weather, interval, temperature, humidity) Step 0 ",
+        "func": "var opts = {\n  reply_to_message_id: msg.payload.messageId,\n  reply_markup: JSON.stringify({\n    \"inline_keyboard\": [[\n                {\n                    \"text\": \"Yes\",\n                    \"callback_data\": \"W0 YES\"\n                },\n                {\n                    \"text\": \"No\",\n                    \"callback_data\": \"W0 NO\"\n                }]\n            ]\n  })\n};\nmsg.payload.content = 'Are you sure you want to change the simulation conditions?';\nmsg.payload.options = opts;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 1920,
+        "wires": [
+            [
+                "4094f839ef084e8f"
+            ]
+        ]
+    },
+    {
+        "id": "4094f839ef084e8f",
+        "type": "telegram sender",
+        "z": "61216a9c9c65a5d3",
+        "name": "",
+        "bot": "227d6c6a69368223",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 1150,
+        "y": 1920,
+        "wires": [
+            [
+                "946e0b129008e048"
+            ]
+        ]
+    },
+    {
+        "id": "946e0b129008e048",
+        "type": "function",
+        "z": "61216a9c9c65a5d3",
+        "name": "Salva IdMessaggio messageIdUpdateCondition nel ChatContex",
+        "func": "var chatId = msg.payload.chatId;\nif (!chatId || typeof chatId !== \"number\") {\n    node.error(\"chatId non valido: \" + chatId);\n    return null;\n}\n\nvar chatContextKey = \"chat_\" + chatId;\nvar chatContext = flow.get(chatContextKey) || {};\n\nchatContext.messageIdUpdateCondition = msg.payload.sentMessageId;\n\nflow.set(chatContextKey, chatContext);\n\n// Debug\nnode.warn(\"Salvato nel Flow: chatContextKey=\" + chatContextKey + \", contenuto=\" + JSON.stringify(chatContext));\n",
+        "outputs": 0,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1520,
+        "y": 1920,
+        "wires": []
+    },
+    {
+        "id": "d266eb210cfe6155",
+        "type": "function",
+        "z": "61216a9c9c65a5d3",
+        "name": "Delete messageIdCurrentConfig",
+        "func": "// Ottieni tutte le chiavi dal contesto flow\nvar allKeys = flow.keys();\n\n// Filtra solo le chiavi che iniziano con \"chat_\"\nvar chatKeys = allKeys.filter(key => key.startsWith(\"chat_\"));\n\n// Prepara un array per i messaggi da inviare\nvar messages = [];\n\n// Scorri tutte le chiavi delle chat e verifica se hanno messageIdCurrentConfig\nchatKeys.forEach(chatKey => {\n    var chatContext = flow.get(chatKey);\n    \n    // Verifica se la proprietà \"messageIdCurrentConfig\" esiste\n    if (chatContext && chatContext.messageIdCurrentConfig) {\n        // Rimuovi la proprietà messageIdCurrentConfig\n        delete chatContext.messageIdCurrentConfig;\n        \n        flow.set(chatKey, chatContext);\n    }\n});\n",
+        "outputs": 0,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1450,
+        "y": 2040,
+        "wires": []
+    },
+    {
+        "id": "a16911f364383be3",
+        "type": "switch",
+        "z": "61216a9c9c65a5d3",
+        "name": "WCancel\\n W0 \\n W1\\n W2\\n W3\\n W4\\n W5\\n otherwise",
+        "property": "payload.content",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "WCancel",
+                "vt": "str"
+            },
+            {
+                "t": "regex",
+                "v": "^W0",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^W1",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^W2",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^W3",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^W4",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^W5",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 8,
+        "x": 680,
         "y": 1560,
+        "wires": [
+            [
+                "c22d0b532414f10c"
+            ],
+            [
+                "727ac3e02bcc48a6"
+            ],
+            [
+                "d7d5a5382622b8a1"
+            ],
+            [
+                "dee3f64836fa02f9"
+            ],
+            [
+                "b812d945bb04114e"
+            ],
+            [
+                "8bf35a69c127faca"
+            ],
+            [
+                "d3e96de33c82f03b"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "3d43db9bef4257a9",
+        "type": "switch",
+        "z": "61216a9c9c65a5d3",
+        "name": "S\\n W\\n otherwise",
+        "property": "payload.content",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^S",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^W",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 3,
+        "x": 480,
+        "y": 1100,
+        "wires": [
+            [
+                "6ee01010c318fdfd"
+            ],
+            [
+                "a16911f364383be3"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "c22d0b532414f10c",
+        "type": "function",
+        "z": "61216a9c9c65a5d3",
+        "name": "Abort UpdateCondition",
+        "func": "var chatId = msg.payload.chatId;\nvar chatContextKey = \"chat_\" + chatId;\n\nvar chatContext = flow.get(chatContextKey);\n\nif (!chatContext || !chatContext.messageIdUpdateCondition) {\n    node.error(\"Message ID (messageIdUpdateCondition) non trovato nel Flow Context per chatId: \" + chatId);\n    return null;\n}\n\nvar updateSimulationContext = chatContext.updateSimulationContext;\nif(chatContext.updateSimulationContext){\n    delete chatContext.updateSimulationContext;\n}\n\nvar newText = \"OK, you can reuse the /update_simulation_condition command when you are ready to change the simulation conditions!\";\n\nvar reply_markup_empty = JSON.stringify({\n    \"inline_keyboard\": [] // Rimuove la tastiera inline se presente\n});\n\nvar options = {\n    chat_id: msg.payload.chatId,\n    reply_markup: reply_markup_empty,\n    message_id: chatContext.messageIdUpdateCondition\n};\n\nmsg.payload.type = 'editMessageText';\nmsg.payload.content = newText;\nmsg.payload.options = options;\n\ndelete chatContext.messageIdUpdateCondition;\n\nflow.set(chatContextKey, chatContext);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 1480,
+        "wires": [
+            [
+                "f729d662da65277e"
+            ]
+        ]
+    },
+    {
+        "id": "f729d662da65277e",
+        "type": "telegram sender",
+        "z": "61216a9c9c65a5d3",
+        "name": "sendTextMessage",
+        "bot": "227d6c6a69368223",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 1490,
+        "y": 1480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "727ac3e02bcc48a6",
+        "type": "function",
+        "z": "61216a9c9c65a5d3",
+        "name": "Keyboard UpdateCondition Step 1",
+        "func": "var chatId = msg.payload.chatId;\nvar chatContextKey = \"chat_\" + chatId;\n\nvar chatContext = flow.get(chatContextKey);\n\nif (!chatContext || !chatContext.messageIdUpdateCondition) {\n    node.error(\"Message ID (messageIdUpdateCondition) non trovato nel Flow Context per chatId: \" + chatId);\n    return null;\n}\n// ID del messaggio con la tastiera inline\n\n// Recupera la scelta dell'utente\nvar userChoice = msg.payload.content; // Es. \"W0 YES\" o \"W1 NO\"\n\n// Prepara il nuovo contenuto del messaggio basato sulla scelta\nvar newText;\nif (userChoice === \"W0 YES\") {\n    newText = \"Great, let's get started!!! \\r\\nWhat weather condition is present on the fields?\";\n} else if (userChoice === \"W0 NO\") {\n    newText = \"OK, you can reuse the /update_simulation_condition command when you are ready to change the simulation conditions!\";\n} else {\n    newText = \"Invalid choice!\";\n}\n\nvar reply_markup_empty = JSON.stringify({\n    \"inline_keyboard\": [] // Rimuove la tastiera inline\n});\n\nvar reply_markup = JSON.stringify({\n    \"inline_keyboard\": [[\n        {\n            \"text\": \"☀️ Sunny ☀️\",\n            \"callback_data\": \"W1 SUNNY\"\n        }],\n    [\n        {\n            \"text\": \"☁️ Cloudy ☁️\",\n            \"callback_data\": \"W1 CLOUDY\"\n        }\n    ],\n    [\n        {\n            \"text\": \"🌦️ Light Rain 🌦️\",\n            \"callback_data\": \"W1 LIGHT_RAIN\"\n        }\n    ],\n    [\n        {\n            \"text\": \"🌧️ Moderate Rain 🌧️\",\n            \"callback_data\": \"W1 MODERATE_RAIN\"\n        }\n    ],\n    [\n        {\n            \"text\": \"⛈️ Heavy Rain ⛈️\",\n            \"callback_data\": \"W1 HEAVY_RAIN\"\n        }\n    ],\n    [\n        {\n            \"text\": \"🌀 Hurricane 🌀\",\n            \"callback_data\": \"W1 HURRICANE\"\n        }\n    ],\n    [\n        {\n            \"text\": \"❌   ABORT   ❌\",\n            \"callback_data\": \"WCancel\"\n        }]\n    ]\n});\n\nif (userChoice === \"W0 YES\") {\n    var options = {\n        chat_id: msg.payload.chatId,\n        reply_markup: reply_markup,\n        message_id: chatContext.messageIdUpdateCondition\n    };\n    msg.payload.type = 'editMessageText';\n    msg.payload.content = newText;\n    msg.payload.options = options;\n} else {\n    var options = {\n        chat_id: msg.payload.chatId,\n        reply_markup: reply_markup_empty,\n        message_id: chatContext.messageIdUpdateCondition\n    };\n    msg.payload.type = 'editMessageText';\n    msg.payload.content = newText;\n    msg.payload.options = options;\n\n    delete chatContext.messageIdUpdateCondition;\n    flow.set(chatContextKey, chatContext);\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1020,
+        "y": 1520,
+        "wires": [
+            [
+                "f729d662da65277e"
+            ]
+        ]
+    },
+    {
+        "id": "d7d5a5382622b8a1",
+        "type": "function",
+        "z": "61216a9c9c65a5d3",
+        "name": "Salva step 1, presenta step 2 temperatura",
+        "func": "var chatId = msg.payload.chatId;\nvar chatContextKey = \"chat_\" + chatId;\n\nvar chatContext = flow.get(chatContextKey);\n\nif (!chatContext || !chatContext.messageIdUpdateCondition) {\n    node.error(\"Message ID (messageIdUpdateCondition) non trovato nel Flow Context per chatId: \" + chatId);\n    return null;\n}\n\nvar currentConfigKey = \"simulation_configuration\";\nvar currentConfig = flow.get(currentConfigKey) || {};\nvar updateSimulationContext = chatContext.updateSimulationContext || {};\nupdateSimulationContext = {\n    weather: msg.payload.content.split(\" \")[1],\n    interval: (typeof currentConfig.interval === 'number') ? currentConfig.interval : 5000, // default value\n    temperature: (typeof currentConfig.temperature === 'number') ? currentConfig.temperature : 24.5, // default value\n    humidity: (typeof currentConfig.humidity === 'number') ? currentConfig.humidity : 60.5 // default value\n};\n\n\nchatContext.updateSimulationContext = updateSimulationContext;\n\n// Debug\nnode.warn(\"Salvato nel Flow: updateSimulationContext=\" + JSON.stringify(updateSimulationContext));\n\nvar weatherText;\n\nswitch (msg.payload.content) {\n    case \"W1 SUNNY\":\n        weatherText = \"☀️ Sunny ☀️\";\n        break;\n    case \"W1 CLOUDY\":\n        weatherText = \"☁️ Cloudy ☁️\";\n        break;\n    case \"W1 LIGHT_RAIN\":\n        weatherText = \"🌦️ Light Rain 🌦️\";\n        break;\n    case \"W1 MODERATE_RAIN\":\n        weatherText = \"🌧️ Moderate Rain 🌧️\";\n        break;\n    case \"W1 HEAVY_RAIN\":\n        weatherText = \"⛈️ Heavy Rain ⛈️\";\n        break;\n    case \"W1 HURRICANE\":\n        weatherText = \"🌀 Hurricane 🌀\";\n        break;\n    default:\n        weatherText = \"Unknown\";\n}\n\n\n\nvar newText = \"OK, the current weather is \" + weatherText +\" ! Great! \\r\\n Now we have to decide what outside temperature we have on agricultural fields!\";\n\nvar reply_markup = JSON.stringify({\n    \"inline_keyboard\": [[\n                {\n                    \"text\": \"24.5°C (Deafult Temperature)\",\n                    \"callback_data\": \"W2 24.50\"\n                }],\n                [\n                {\n                    \"text\": \"-10°C\",\n                    \"callback_data\": \"W2 -10.01\"\n                },\n                {\n                    \"text\": \"-5°C\",\n                    \"callback_data\": \"W2 -5.01\"\n                },\n                {\n                    \"text\": \"0°C\",\n                    \"callback_data\": \"W2 0.01\"\n                },\n                {\n                    \"text\": \"5°C\",\n                    \"callback_data\": \"W2 5.01\"\n                }\n                ],\n                [  \n                {\n                    \"text\": \"10°C\",\n                    \"callback_data\": \"W2 10.01\"\n                },\n                {\n                    \"text\": \"15°C\",\n                    \"callback_data\": \"W2 15.01\"\n                },\n                {\n                    \"text\": \"20°C\",\n                    \"callback_data\": \"W2 20.01\"\n                },\n                {\n                    \"text\": \"25°C\",\n                    \"callback_data\": \"W2 25.01\"\n                }\n                ],\n                [\n                {\n                    \"text\": \"30°C\",\n                    \"callback_data\": \"W2 30.01\"\n                },\n                {\n                    \"text\": \"35°C\",\n                    \"callback_data\": \"W2 35.01\"\n                },\n                {\n                    \"text\": \"40°C\",\n                    \"callback_data\": \"W2 40.01\"\n                },\n                {\n                    \"text\": \"45°C\",\n                    \"callback_data\": \"W2 45.01\"\n                }\n                ],\n                [\n                {\n                    \"text\": \"❌   ABORT   ❌\",\n                    \"callback_data\": \"WCancel\"\n                }]\n            ]\n});\n\nvar options = {\n        chat_id: msg.payload.chatId,\n        reply_markup: reply_markup,\n        message_id: chatContext.messageIdUpdateCondition\n    };\n\nmsg.payload.type = 'editMessageText';\nmsg.payload.content = newText;\nmsg.payload.options = options;\n\nflow.set(chatContextKey, chatContext);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1040,
+        "y": 1560,
+        "wires": [
+            [
+                "f729d662da65277e"
+            ]
+        ]
+    },
+    {
+        "id": "dee3f64836fa02f9",
+        "type": "function",
+        "z": "61216a9c9c65a5d3",
+        "name": "Salva step 2, presenta step 3 umidità",
+        "func": "var chatId = msg.payload.chatId;\nvar chatContextKey = \"chat_\" + chatId;\n\nvar chatContext = flow.get(chatContextKey);\n\nif (!chatContext || !chatContext.messageIdUpdateCondition) {\n    node.error(\"Message ID (messageIdUpdateCondition) non trovato nel Flow Context per chatId: \" + chatId);\n    return null;\n}\n\nvar updateSimulationContext = chatContext.updateSimulationContext;\n\nif (!updateSimulationContext) {\n    node.error(\"updateSimulationContext non trovato nel Flow Context per chatId: \" + chatId);\n    return null;\n}\nupdateSimulationContext.temperature = parseFloat(msg.payload.content.split(\" \")[1]);\n\nchatContext.updateSimulationContext = updateSimulationContext;\n\n// Debug\nnode.warn(\"Salvato nel Flow: updateSimulationContext=\" + JSON.stringify(updateSimulationContext));\n\nvar weatherText = msg.payload.content.split(\" \")[1];\n\nvar newText = \"OK, the current temperature is \" + weatherText +\" ! Great! \\r\\n Now we have to decide what is the external moisture we have on agricultural fields!\";\n\nvar reply_markup = JSON.stringify({\n    \"inline_keyboard\": [[\n                {\n                    \"text\": \"60.5% (Deafult Temperature)\",\n                    \"callback_data\": \"W3 60.5\"\n                }],\n                [\n                {\n                    \"text\": \"0%\",\n                    \"callback_data\": \"W3 0.01\"\n                },\n                {\n                    \"text\": \"10%\",\n                    \"callback_data\": \"W3 10.01\"\n                },\n                {\n                    \"text\": \"20%\",\n                    \"callback_data\": \"W3 20.01\"\n                },\n                {\n                    \"text\": \"30%\",\n                    \"callback_data\": \"W3 30.01\"\n                }\n                ],\n                [  \n                {\n                    \"text\": \"40%\",\n                    \"callback_data\": \"W3 40.01\"\n                },\n                {\n                    \"text\": \"45%\",\n                    \"callback_data\": \"W3 45.01\"\n                },\n                {\n                    \"text\": \"50%\",\n                    \"callback_data\": \"W3 50.01\"\n                },\n                {\n                    \"text\": \"55%\",\n                    \"callback_data\": \"W3 55.01\"\n                }\n                ],\n                [\n                {\n                    \"text\": \"60%\",\n                    \"callback_data\": \"W3 60.01\"\n                },\n                {\n                    \"text\": \"70%\",\n                    \"callback_data\": \"W3 70.01\"\n                },\n                {\n                    \"text\": \"80%\",\n                    \"callback_data\": \"W3 80.01\"\n                },\n                {\n                    \"text\": \"90%\",\n                    \"callback_data\": \"W3 90.01\"\n                }\n                ],\n                [\n                {\n                    \"text\": \"❌   ABORT   ❌\",\n                    \"callback_data\": \"WCancel\"\n                }]\n            ]\n});\n\nvar options = {\n        chat_id: msg.payload.chatId,\n        reply_markup: reply_markup,\n        message_id: chatContext.messageIdUpdateCondition\n    };\n\nmsg.payload.type = 'editMessageText';\nmsg.payload.content = newText;\nmsg.payload.options = options;\n\nflow.set(chatContextKey, chatContext);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1030,
+        "y": 1600,
+        "wires": [
+            [
+                "f729d662da65277e"
+            ]
+        ]
+    },
+    {
+        "id": "b812d945bb04114e",
+        "type": "function",
+        "z": "61216a9c9c65a5d3",
+        "name": "Salva step 3, presenta step 4 Interval",
+        "func": "var chatId = msg.payload.chatId;\nvar chatContextKey = \"chat_\" + chatId;\n\nvar chatContext = flow.get(chatContextKey);\n\nif (!chatContext || !chatContext.messageIdUpdateCondition) {\n    node.error(\"Message ID (messageIdUpdateCondition) non trovato nel Flow Context per chatId: \" + chatId);\n    return null;\n}\n\nvar updateSimulationContext = chatContext.updateSimulationContext;\n\nif (!updateSimulationContext) {\n    node.error(\"updateSimulationContext non trovato nel Flow Context per chatId: \" + chatId);\n    return null;\n}\nupdateSimulationContext.humidity = parseFloat(msg.payload.content.split(\" \")[1]);\n\nchatContext.updateSimulationContext = updateSimulationContext;\n\n// Debug\nnode.warn(\"Salvato nel Flow: updateSimulationContext=\" + JSON.stringify(updateSimulationContext));\n\nvar weatherText = msg.payload.content.split(\" \")[1];\n\nvar newText = \"OK, the current humidity is \" + weatherText +\" ! Excellent!\\r\\n Now all that remains is to determine how often the sensors will update. \\r\\n\\r\\nSelect the time interval from those present:\";\n\nvar reply_markup = JSON.stringify({\n    \"inline_keyboard\": [\n    [\n        {\n            \"text\": \"DEFAULT 5 sec\",\n            \"callback_data\": \"W4 5000\"\n        }\n    ],\n    [\n        {\n            \"text\": \"1 sec\",\n            \"callback_data\": \"W4 1000\"\n        },\n        {\n            \"text\": \"2 sec\",\n            \"callback_data\": \"W4 2000\"\n        }\n    ],\n    [\n        {\n            \"text\": \"10 sec\",\n            \"callback_data\": \"W4 10000\"\n        },\n        {\n            \"text\": \"15 sec\",\n            \"callback_data\": \"W4 15000\"\n        }\n    ],\n    [\n        {\n            \"text\": \"30 sec\",\n            \"callback_data\": \"W4 30000\"\n        },\n        {\n            \"text\": \"1 min\",\n            \"callback_data\": \"W4 60000\"\n        }\n    ],\n    [\n        {\n            \"text\": \"❌   ABORT   ❌\",\n            \"callback_data\": \"WCancel\"\n        }\n    ]\n]});\n\nvar options = {\n        chat_id: msg.payload.chatId,\n        reply_markup: reply_markup,\n        message_id: chatContext.messageIdUpdateCondition\n    };\n\nmsg.payload.type = 'editMessageText';\nmsg.payload.content = newText;\nmsg.payload.options = options;\n\nflow.set(chatContextKey, chatContext);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1030,
+        "y": 1640,
+        "wires": [
+            [
+                "f729d662da65277e"
+            ]
+        ]
+    },
+    {
+        "id": "8bf35a69c127faca",
+        "type": "function",
+        "z": "61216a9c9c65a5d3",
+        "name": "Salva step 4, peresenta il riaepilogo",
+        "func": "var chatId = msg.payload.chatId;\nvar chatContextKey = \"chat_\" + chatId;\n\nvar chatContext = flow.get(chatContextKey);\n\nif (!chatContext || !chatContext.messageIdUpdateCondition) {\n    node.error(\"Message ID (messageIdUpdateCondition) non trovato nel Flow Context per chatId: \" + chatId);\n    return null;\n}\n\nvar updateSimulationContext = chatContext.updateSimulationContext;\n\nif (!updateSimulationContext) {\n    node.error(\"updateSimulationContext non trovato nel Flow Context per chatId: \" + chatId);\n    return null;\n}\nupdateSimulationContext.interval = parseInt(msg.payload.content.split(\" \")[1]);\n\nchatContext.updateSimulationContext = updateSimulationContext;\n\n// Debug\nnode.warn(\"Salvato nel Flow: updateSimulationContext=\" + JSON.stringify(updateSimulationContext));\n\nvar weatherText = msg.payload.content.split(\" \")[1];\n\nswitch (msg.payload.content) {\n    case \"W4 5000\":\n        weatherText = \"5 sec\";\n        break;\n    case \"W4 1000\":\n        weatherText = \"1 sec\";\n        break;\n    case \"W4 2000\":\n        weatherText = \"2 sec\";\n        break;\n    case \"W4 10000\":\n        weatherText = \"10 sec\";\n        break;\n    case \"W4 15000\":\n        weatherText = \"15 sec\";\n        break;\n    case \"W4 30000\":\n        weatherText = \"30 sec\";\n        break;\n    case \"W4 60000\":\n        weatherText = \"1 min\";\n        break;\n    default:\n        weatherText = \"Unknown\";\n}\n\nvar newText = \"OK, the current interval is \" + weatherText +\" ! Excellent!\\r\\n This is a summary of the configuration:<pre>\"+ JSON.stringify(updateSimulationContext, null, 2) +\"</pre>Do you want to confirm?\";\n\nvar reply_markup = JSON.stringify({\n    \"inline_keyboard\":[\n    [\n        {\n            \"text\": \"YES\",\n            \"callback_data\": \"W5 YES\"\n        },\n        {\n            \"text\": \"NO\",\n            \"callback_data\": \"WCancel\"\n        }\n    ]\n]});\n\nvar options = {\n        chat_id: msg.payload.chatId,\n        reply_markup: reply_markup,\n        parse_mode: 'HTML',\n        message_id: chatContext.messageIdUpdateCondition\n    };\n\nmsg.payload.type = 'editMessageText';\nmsg.payload.content = newText;\nmsg.payload.options = options;\n\n\nflow.set(chatContextKey, chatContext);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1020,
+        "y": 1680,
+        "wires": [
+            [
+                "f729d662da65277e"
+            ]
+        ]
+    },
+    {
+        "id": "d3e96de33c82f03b",
+        "type": "function",
+        "z": "61216a9c9c65a5d3",
+        "name": "Conferma, Elimina il messaggio, invia il json MQTT",
+        "func": "var chatId = msg.payload.chatId;\nvar chatContextKey = \"chat_\" + chatId;\n\nvar chatContext = flow.get(chatContextKey);\n\nif (!chatContext || !chatContext.messageIdUpdateCondition) {\n    node.error(\"messageIdUpdateCondition ID non trovato nel Flow Context per chatId: \" + chatId);\n    return null;\n}\n\nvar updateSimulationContext = { ...chatContext.updateSimulationContext }; // Copia dell'oggetto\n\nif (!updateSimulationContext || !updateSimulationContext.weather || !Number.isInteger(updateSimulationContext.interval) || !(Number(updateSimulationContext.temperature) === updateSimulationContext.temperature && !Number.isInteger(updateSimulationContext.temperature)) || !(Number(updateSimulationContext.humidity) === updateSimulationContext.humidity && !Number.isInteger(updateSimulationContext.humidity))) {\n    node.error(\"updateSimulationContext non trovato nel Flow Context per chatId: \" + chatId);\n    node.error(\"!updateSimulationContext.weather: \" + !updateSimulationContext.weather);\n    node.error(\"!Number.isInteger(updateSimulationContext.interval): \" + !Number.isInteger(updateSimulationContext.interval));\n    node.error(\"!(Number(updateSimulationContext.temperature) === updateSimulationContext.temperature && !Number.isInteger(updateSimulationContext.temperature)): \" + !(Number(updateSimulationContext.temperature) === updateSimulationContext.temperature && !Number.isInteger(updateSimulationContext.temperature)));\n    node.error(\"!(Number(updateSimulationContext.humidity) === updateSimulationContext.humidity && !Number.isInteger(updateSimulationContext.humidity)): \" + !(Number(updateSimulationContext.humidity) === updateSimulationContext.humidity && !Number.isInteger(updateSimulationContext.humidity)));\n    return null;\n}\n\nvar replyText = \"Configuration Saved and Sent to Server!\";\n\nvar sendTextMessage = {\n    payload: {\n        chatId: chatId,\n        type: 'message',\n        content: replyText\n    }\n};\n\nvar deleteInlineMessage = {\n    // msg.payload.type = 'deleteMessage';\n    // msg.payload.content = idMessage\n    payload: {\n        chatId: chatId,\n        type: 'deleteMessage',\n        content: chatContext.messageIdUpdateCondition\n    }\n};\n\nvar result = {\n    weather: updateSimulationContext.weather,\n    interval: parseInt(updateSimulationContext.interval, 10),\n    temperature: parseFloat(updateSimulationContext.temperature),\n    humidity: parseFloat(updateSimulationContext.humidity)\n};\n\ndelete chatContext.updateSimulationContext;\ndelete chatContext.messageIdUpdateCondition;\n\nflow.set(chatContextKey, chatContext);\n\nvar congifMessage = {\n    payload: result,\n    topic: 'sensors/simulation/update'\n}\n\nreturn [sendTextMessage, deleteInlineMessage, congifMessage];",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1070,
+        "y": 1740,
+        "wires": [
+            [
+                "f729d662da65277e"
+            ],
+            [
+                "f729d662da65277e"
+            ],
+            [
+                "e8625ac36014c7bd"
+            ]
+        ]
+    },
+    {
+        "id": "e8625ac36014c7bd",
+        "type": "mqtt out",
+        "z": "61216a9c9c65a5d3",
+        "name": "",
+        "topic": "sensors/simulation/update",
+        "qos": "2",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "24f8f90e89fb0dcc",
+        "x": 1510,
+        "y": 1540,
+        "wires": []
+    },
+    {
+        "id": "3013c7537bd36623",
+        "type": "inject",
+        "z": "61216a9c9c65a5d3",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "5",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "5",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 310,
+        "y": 60,
+        "wires": [
+            [
+                "47a0a3f1c4fe47d4"
+            ]
+        ]
+    },
+    {
+        "id": "47a0a3f1c4fe47d4",
+        "type": "function",
+        "z": "61216a9c9c65a5d3",
+        "name": "Garbage Collector",
+        "func": "// Ottieni tutte le chiavi del contesto flow\nvar contextKeys = flow.keys(); // Specifica lo store 'file', oppure 'memory' se necessario\n\n// Conta gli oggetti rimossi\nvar removedCount = 0;\n\n// Itera su tutte le chiavi\ncontextKeys.forEach(function(key) {\n    // Ottieni il valore associato alla chiave\n    var value = flow.get(key, \"file\"); // Specifica lo store appropriato\n\n    // Controlla se il valore è un oggetto vuoto\n    if (value && typeof value === \"object\" && Object.keys(value).length === 0) {\n        // Rimuovi la chiave dal contesto\n        flow.set(key, undefined);\n        removedCount++;\n        node.warn(\"Rimosso oggetto vuoto: \" + key);\n    }\n});\n\n// Debug finale\n//node.warn(\"Pulizia completata. Oggetti vuoti rimossi: \" + removedCount);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 60,
         "wires": [
             []
         ]
