@@ -1,0 +1,58 @@
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+{
+  "manifestVersion": "2.0.0",
+  "signatureType": "grafana",
+  "signedByOrg": "grafana",
+  "signedByOrgName": "Grafana Labs",
+  "plugin": "grafana-lokiexplore-app",
+  "version": "1.0.5",
+  "time": 1736451282883,
+  "keyId": "7e4d0c6a708866e7",
+  "files": {
+    "1759fd27b2c9f73dea05.wasm": "c79b8fa1bea557bdcd6b743a00e5c47aef7f71a457dcbaa63218dd4a706475b6",
+    "220.js": "70588c2014f2aae4b4572f253d787870b16cf16af7f61ed092973dd070c6f8e2",
+    "220.js.map": "a3258afce70521793cfa720c06011a43625fd4251efaa08f23150fbe86ac68aa",
+    "576.js": "a166a013790ad7469561b1cf5abea362e62340df8ab74761e3ba2f44c3d46dc0",
+    "576.js.LICENSE.txt": "87befc7e6ae0ec4f0310b8a9313ee0594469eba212c9869e3cda06016c2fe242",
+    "576.js.map": "7ff0be59820cb26f2adb9885689d0165cda9c00a1885cf478bee47790b4f7a3f",
+    "59.js": "75f7eda3e112fac3fcae7616f3c7e24e437195b31c9acdedc3e0a8f192841d81",
+    "59.js.map": "5f32b7d1031ede52291d58c74eec4b2b1d0f0b02ee2f0bd9cf3da3ceabde87a7",
+    "599.js": "2aa484e95c07d649f65d7dc6fe05efdcd7c2579dd674d180d762d339ef5d6903",
+    "599.js.map": "462e41e7e67f270f2426007f9905a5c479f5e3292b4c450ebc62c1dbda139ae9",
+    "631.js": "a96cbba9b5da026abfc403703fe81fbf3c8a0d7b2e82156b5caf1c6611c3b246",
+    "631.js.map": "413f3859bff9254f1aab5a1c2125d6dde941e10a578b35a0b732f7f5bdb7d141",
+    "649058283f564041551d.wasm": "84a1635aaca10061a9fad641983327dc9d261fb2cd3ca5ff3dd26bf3072664df",
+    "854.js": "f7b5c0281ea90108ac385972e8b5c3d53d694269b4e30c41a2676c695073a216",
+    "854.js.map": "2ca819a163e860e4d4cf72f96ce1c6f5f73117083d3cf5023bd3da7d40e4e7fb",
+    "944.js": "04ccf9314434a9b994567a225259f2f0b3a8286eba750cc34dd559401fda8f5b",
+    "944.js.map": "1c04a358822e19bba71f7ae6ab627054ad6e2a0ddd101628671b0b82ff87548c",
+    "CHANGELOG.md": "0225c56a64a39217f8651e64109c7a090c5ccd63c5a12ca65b0b963e753a6323",
+    "LICENSE": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
+    "README.md": "8d9876f321f521513ab1441d2b120fdd20506e14539c4b04d2073ce6f3f4fe19",
+    "img/3d96a93cfcb32df74eef.svg": "11ca1cf6edec87db3a9725b071f17c93c2313d9130d31d37da3458509a8ff67b",
+    "img/explore-logs-features.jpeg": "18675a62a579da52f0b1cc58796eba8896c38333de4b28f0b1e67476b6f63dd6",
+    "img/fields.png": "0b087967a82bb1a6026c35b03bfe2073b35c4da13972abf59bb9a4a404256727",
+    "img/grot_err.svg": "6f535973a005418084ad6218f78f2e0e92a7a06efb7e66a05a89c35be59eb154",
+    "img/grot_err_light.svg": "eb43595481ac03b7569f9909d9e093629dfbf7001f4c95c435c53a6987397662",
+    "img/logo.svg": "11ca1cf6edec87db3a9725b071f17c93c2313d9130d31d37da3458509a8ff67b",
+    "img/patterns.png": "bf100549ec168420e9a7b6d759f492a761f964d33d45a3217ba30b9827b2bece",
+    "img/table.png": "fe2fa65a8a761feb0a93c62231644645fb60ee06c44dda3ab16dc4e432286572",
+    "module.js": "2fdc954fb284dfedc52c03286d4d4ec56112abec12c40083983a92fc35076e0f",
+    "module.js.map": "a9e9f2a51444321df7d23ec33d9973535dc79844bcdc0bf1227bc4edbc216c56",
+    "plugin.json": "86660fdcb3fadfc755312167ff5dea1d93ba43e15fe8c09a349b1805925c3cb8"
+  }
+}
+-----BEGIN PGP SIGNATURE-----
+Version: OpenPGP.js v4.10.11
+Comment: https://openpgpjs.org
+
+wrkEARMKAAYFAmeAJNMAIQkQfk0ManCIZucWIQTzOyW2kQdOhGNlcPN+TQxq
+cIhm5w/tAgkAHzDdT0WhoHRf915DfCDrVhpE2Yv1eGfa/ihU2/GT6dEqtjwR
+RH8ZmWfcrSXn3qd9apD6t+WR1dmaCJ6odJateu4CCQGDOYeIA59hiMnLFVmk
+6mHH4Y7glsG4FhlezTG0g2tkW0A4p20HxZqhVfyHgUcOFHCkmo18URTwCnQl
+P5TKvSX5Eg==
+=x8Ju
+-----END PGP SIGNATURE-----

@@ -34,9 +34,53 @@ services:
     depends_on:
       - mosquitto
 
+  influxdb:
+    image: influxdb:2.7.4
+    container_name: influxdb-SA-FMS
+    env_file:
+      - ./influxdb/influx.env
+    volumes:
+      - influxdb_sa_fms_data:/var/lib/influxdb2
+      - ./influxdb/config:/etc/influxdb2:rw
+    ports:
+      - "8086:8086"
+    networks:
+      - se4iot-SA-FMS-network
+
+  telegraf:
+    image: telegraf:latest
+    container_name: telegraf-SA-FMS
+    depends_on:
+      - influxdb
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    env_file:
+      - ./influxdb/influx.env
+    networks:
+      - se4iot-SA-FMS-network
+#    restart: always
+
+  grafana:
+    container_name: grafana-SA-FMS
+#    restart: always
+#    build: ./grafana
+    image: grafana/grafana:latest
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana/data:/var/lib/grafana:rw
+    networks:
+      - se4iot-SA-FMS-network
+    depends_on:
+      - influxdb
+    ports:
+      - 3000:3000
+
 volumes:
   mosquitto_sa_fms_data:
   nodered_sa_fms_data:
+  influxdb_sa_fms_data:
 
 networks:
   se4iot-SA-FMS-network:
