@@ -12,12 +12,16 @@ public class WaterSalinitySensor extends AbstractSensor<Float> {
     public Float getMeasurement(ClimateContext context) {
         WeatherCondition condition = context.weatherCondition();
         float currentValue = getValue() != null ? getValue() : 500.0f; // Valore iniziale
-        switch (condition) {
-            case LIGHT_RAIN -> currentValue -= (float) (Math.random() * 20); // Diluizione lieve
-            case MODERATE_RAIN -> currentValue -= (float) (Math.random() * 50); // Diluizione moderata
-            case HEAVY_RAIN, HURRICANE -> currentValue -= (float) (Math.random() * 100); // Diluizione significativa
-            case SUNNY -> currentValue += (float) (Math.random() * 10); // Aumento per evaporazione
-        }
+        float adjustment = switch (condition) {
+            case LIGHT_RAIN -> (float) (Math.random() * 20) * -1; // Diluizione lieve
+            case MODERATE_RAIN -> (float) (Math.random() * 50) * -1; // Diluizione moderata
+            case HEAVY_RAIN, HURRICANE -> (float) (Math.random() * 100) * -1; // Diluizione significativa
+            case SUNNY -> (float) (Math.random() * 10); // Aumento per evaporazione
+            default -> 0;
+        };
+        // Genera un segno random (+1 o -1)
+        float sign = (Math.random() < 0.5) ? 1f : -1f;
+        currentValue = currentValue + (sign * adjustment);
         currentValue = Math.clamp(currentValue, 0.0f, 2000.0f); // Limita tra 0 e 2000 μS/cm
         setValue(currentValue);
         return currentValue;
