@@ -1,3 +1,4 @@
+# influx-configs
 [default]
   url = "http://localhost:8086"
   token = "eQSbFC1TKpRhBJR_h1fpYEZpbGMdWBd0iw1LEFI7RjantkIJqALMWIktraqhK2AN0pEXHAdIj6_W65jqJwz2og=="
