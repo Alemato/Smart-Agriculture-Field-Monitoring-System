@@ -1,28 +1,29 @@
-version: '3.8'
-
 name: Smart-Agriculture-Field-Monitoring-System
 
 services:
   mosquitto:
-    image: eclipse-mosquitto:latest
+    build:
+      context: Mosquitto-SA-FMS
+      dockerfile: Dockerfile
+    image: eclipse-mosquitto_sa_fms:latest
     container_name: mosquitto-SA-FMS
     ports:
       - "1883:1883"
     volumes:
       - mosquitto_sa_fms_data:/mosquitto
-      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
     networks:
       - se4iot-SA-FMS-network
     # restart: always
 
   node-red:
     build:
-      context: ./nodered
+      context: Node-RED-SA-FMS
       dockerfile: Dockerfile
     image: nodered_sa_fms:latest
     container_name: node-red-SA-FMS
+    env_file:
+      - se4iot-SA-FMS.env
     environment:
-      - TZ=Europe/Amsterdam
       - BOT_TOKEN=<TELEGRAMBOT TOKEN HERE PLEASE!>
     ports:
       - "1880:1880" # Porta web di Node-RED
@@ -35,52 +36,92 @@ services:
       - mosquitto
 
   influxdb:
-    image: influxdb:2.7.4
+    build:
+      context: InfluxDB-SA-FMS
+      dockerfile: Dockerfile
+    image: influxdb_sa_fms:latest
     container_name: influxdb-SA-FMS
     env_file:
-      - ./influxdb/influx.env
-    volumes:
-      - influxdb_sa_fms_data:/var/lib/influxdb2
-      - ./influxdb/config:/etc/influxdb2:rw
+      - se4iot-SA-FMS.env
     ports:
       - "8086:8086"
+    volumes:
+      - influxdb_sa_fms_data:/var/lib/influxdb2
     networks:
       - se4iot-SA-FMS-network
 
   telegraf:
-    image: telegraf:latest
+    build:
+      context: Telegraf-SA-FMS
+      dockerfile: Dockerfile
+    image: telegraf_sa_fms:latest
     container_name: telegraf-SA-FMS
-    depends_on:
-      - influxdb
-    volumes:
-      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     env_file:
-      - ./influxdb/influx.env
+      - se4iot-SA-FMS.env
+    volumes:
+      - telegraf_sa_fms_data:/var/lib/telegraf
     networks:
       - se4iot-SA-FMS-network
-#    restart: always
+    # restart: always
+    depends_on:
+      - mosquitto
+      - influxdb
+
+  maildev:
+    image: maildev/maildev:latest
+    container_name: maildev-SA-FMS
+    env_file:
+      - se4iot-SA-FMS.env
+    volumes:
+      - maildev_sa_fms_data:/data
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    networks:
+      - se4iot-SA-FMS-network
+    # restart: always
+
+  grafana-renderer:
+    image: grafana/grafana-image-renderer:latest
+    container_name: grafana-renderer-SA-FMS
+    ports:
+      - "8081:8081"
+    volumes:
+      - grafana_renderer_sa_fms_data:/var/lib/renderer
+    networks:
+      - se4iot-SA-FMS-network
+    # restart: always
 
   grafana:
+    build:
+      context: Grafana-SA-FMS
+      dockerfile: Dockerfile
+    image: grafana_sa_fms:latest
+#    image: grafana/grafana:11.4.0
     container_name: grafana-SA-FMS
-#    restart: always
-#    build: ./grafana
-    image: grafana/grafana:latest
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+    env_file:
+      - se4iot-SA-FMS.env
+    ports:
+      - "3000:3000"
     volumes:
-      - ./grafana/data:/var/lib/grafana:rw
+      - grafana_sa_fms_data:/var/lib/grafana
+#      - ./Grafana-SA-FMS/data:/var/lib/grafana
     networks:
       - se4iot-SA-FMS-network
+    # restart: always
     depends_on:
       - influxdb
-    ports:
-      - 3000:3000
+      - maildev
+      - grafana-renderer
 
 volumes:
   mosquitto_sa_fms_data:
   nodered_sa_fms_data:
   influxdb_sa_fms_data:
+  telegraf_sa_fms_data:
+  maildev_sa_fms_data:
+  grafana_renderer_sa_fms_data:
+  grafana_sa_fms_data:
 
 networks:
   se4iot-SA-FMS-network:
