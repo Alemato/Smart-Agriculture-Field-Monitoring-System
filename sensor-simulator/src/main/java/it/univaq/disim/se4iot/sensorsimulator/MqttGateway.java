@@ -35,6 +35,7 @@ public class MqttGateway {
                 SimulationConfig config = objectMapper.readValue(decodedPayload, SimulationConfig.class);
                 log.info("Configurazione Ricevuta: {}", config);
                 simulation.changeConfiguration(config);
+                getSimulation();
             }
         } catch (Exception e) {
             log.error(FAIL_PROCESS_MESSAGE, e.getMessage(), e);
@@ -78,6 +79,7 @@ public class MqttGateway {
     @ServiceActivator(inputChannel = "inputChannelSimulationStart")
     public void handleSimulationStart(Message<?> message) {
         log.info("Ricevuto Messaggio da sensors/simulation/start");
+        getSimulation();
         simulation.startSimulation();
     }
 

@@ -1,32 +1,41 @@
-# Phase 1: Build
+#Phase 1: Build - Compile and package the application
 FROM maven:3.9.9-amazoncorretto-21-alpine AS build
-
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy file pom.xml and download dependencies
+# Copy pom.xml and resolve dependencies
 COPY pom.xml .
 RUN mvn dependency:go-offline -B
 
-# Copy the code and compile the project
+# Copy the source code and package the application
 COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Build with Maven
-RUN mvn package -DskipTests
+# Phase 2: Extract Layers - Optimize jar layout
+FROM bellsoft/liberica-openjre-alpine:21.0.5-cds AS extract
+WORKDIR /builder
 
-# Phase 2: Run
-FROM amazoncorretto:21.0.5-alpine
+# Copy the packaged jar from the build stage
+ARG JAR_FILE=target/*.jar
+COPY --from=build /app/${JAR_FILE} application.jar
 
-# Set the working directory
+# Extract the jar file into separate layers
+RUN java -Djarmode=tools -jar application.jar extract --layers --destination extracted
+
+# Phase 3: Run - Create a lightweight runtime container
+FROM bellsoft/liberica-openjre-alpine:21.0.5-cds
 WORKDIR /app
 
-# Copy the jar from build stage
-COPY --from=build /app/target/*.jar app.jar
+# Copy extracted layers from the builder stage
+COPY --from=extract /builder/extracted/dependencies/ ./
+COPY --from=extract /builder/extracted/spring-boot-loader/ ./
+COPY --from=extract /builder/extracted/snapshot-dependencies/ ./
+COPY --from=extract /builder/extracted/application/ ./
 
+# Metadata
 LABEL name="Smart Agriculture - Field Monitoring System: Sensor Simulator" \
-      description="Iot Sensor Simulator" \
-      version="0.0.1" \
+      description="IoT Sensor Simulator" \
+      version="1.0.0" \
       authors="University of L'Aquila"
 
-# Command to run the application
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app/app.jar"]
+# Command to start the application
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "application.jar"]
