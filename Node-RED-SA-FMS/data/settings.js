@@ -557,8 +557,8 @@ module.exports = {
             rain: {max: 40}
         },
         chats: [
-            ["chat_92788892", true],
-            ["chat_95127052", true]
+            ["chat_92788892",{"active":true,"email":"alessandro@example.com"}],
+            ["chat_95127052", {"active":true,"email":"stefano@example.com"}]
         ]
     },
 
