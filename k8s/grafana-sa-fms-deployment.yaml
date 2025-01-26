@@ -1,0 +1,189 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --out k8s/
+    kompose.version: 1.35.0 (9532ceef3)
+  labels:
+    io.kompose.service: grafana-sa-fms
+  name: grafana-sa-fms
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: grafana-sa-fms
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert --out k8s/
+        kompose.version: 1.35.0 (9532ceef3)
+      labels:
+        io.kompose.service: grafana-sa-fms
+    spec:
+      containers:
+        - env:
+            - name: BROKER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: BROKER_PORT
+                  name: se4iot-SA-FMS-env
+            - name: BROKER_PROTOCOL
+              valueFrom:
+                configMapKeyRef:
+                  key: BROKER_PROTOCOL
+                  name: se4iot-SA-FMS-env
+            - name: BROKER_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: BROKER_URL
+                  name: se4iot-SA-FMS-env
+            - name: CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  key: CLIENT_ID
+                  name: se4iot-SA-FMS-env
+            - name: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
+              valueFrom:
+                configMapKeyRef:
+                  key: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
+                  name: se4iot-SA-FMS-env
+            - name: DOCKER_INFLUXDB_INIT_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  key: DOCKER_INFLUXDB_INIT_BUCKET
+                  name: se4iot-SA-FMS-env
+            - name: DOCKER_INFLUXDB_INIT_MODE
+              valueFrom:
+                configMapKeyRef:
+                  key: DOCKER_INFLUXDB_INIT_MODE
+                  name: se4iot-SA-FMS-env
+            - name: DOCKER_INFLUXDB_INIT_ORG
+              valueFrom:
+                configMapKeyRef:
+                  key: DOCKER_INFLUXDB_INIT_ORG
+                  name: se4iot-SA-FMS-env
+            - name: DOCKER_INFLUXDB_INIT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: DOCKER_INFLUXDB_INIT_PASSWORD
+                  name: se4iot-SA-FMS-env
+            - name: DOCKER_INFLUXDB_INIT_RETENTION
+              valueFrom:
+                configMapKeyRef:
+                  key: DOCKER_INFLUXDB_INIT_RETENTION
+                  name: se4iot-SA-FMS-env
+            - name: DOCKER_INFLUXDB_INIT_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: DOCKER_INFLUXDB_INIT_USERNAME
+                  name: se4iot-SA-FMS-env
+            - name: GF_RENDERING_CALLBACK_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_RENDERING_CALLBACK_URL
+                  name: se4iot-SA-FMS-env
+            - name: GF_RENDERING_SERVER_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_RENDERING_SERVER_URL
+                  name: se4iot-SA-FMS-env
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_SECURITY_ADMIN_PASSWORD
+                  name: se4iot-SA-FMS-env
+            - name: GF_SECURITY_ADMIN_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_SECURITY_ADMIN_USER
+                  name: se4iot-SA-FMS-env
+            - name: GF_SMTP_EHLO_IDENTITY
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_SMTP_EHLO_IDENTITY
+                  name: se4iot-SA-FMS-env
+            - name: GF_SMTP_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_SMTP_ENABLED
+                  name: se4iot-SA-FMS-env
+            - name: GF_SMTP_FROM_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_SMTP_FROM_ADDRESS
+                  name: se4iot-SA-FMS-env
+            - name: GF_SMTP_FROM_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_SMTP_FROM_NAME
+                  name: se4iot-SA-FMS-env
+            - name: GF_SMTP_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_SMTP_HOST
+                  name: se4iot-SA-FMS-env
+            - name: GF_SMTP_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_SMTP_PASSWORD
+                  name: se4iot-SA-FMS-env
+            - name: GF_SMTP_SKIP_VERIFY
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_SMTP_SKIP_VERIFY
+                  name: se4iot-SA-FMS-env
+            - name: GF_SMTP_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_SMTP_USER
+                  name: se4iot-SA-FMS-env
+            - name: INFLUX_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: INFLUX_HOST
+                  name: se4iot-SA-FMS-env
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef:
+                  key: JAVA_OPTS
+                  name: se4iot-SA-FMS-env
+            - name: MAILDEV_WEB_PASS
+              valueFrom:
+                configMapKeyRef:
+                  key: MAILDEV_WEB_PASS
+                  name: se4iot-SA-FMS-env
+            - name: MAILDEV_WEB_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: MAILDEV_WEB_USER
+                  name: se4iot-SA-FMS-env
+            - name: MQTT_BROKER
+              valueFrom:
+                configMapKeyRef:
+                  key: MQTT_BROKER
+                  name: se4iot-SA-FMS-env
+            - name: MQTT_CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  key: MQTT_CLIENT_ID
+                  name: se4iot-SA-FMS-env
+            - name: TZ
+              valueFrom:
+                configMapKeyRef:
+                  key: TZ
+                  name: se4iot-SA-FMS-env
+          image: grafana_sa_fms:latest
+          name: grafana-sa-fms
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-sa-fms-data
+      restartPolicy: Always
+      volumes:
+        - name: grafana-sa-fms-data
+          persistentVolumeClaim:
+            claimName: grafana-sa-fms-data

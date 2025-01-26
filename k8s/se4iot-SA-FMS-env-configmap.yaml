@@ -1,0 +1,37 @@
+apiVersion: v1
+data:
+  BROKER_PORT: "1883"
+  BROKER_PROTOCOL: tcp
+  BROKER_URL: mosquitto-SA-FMS
+  CLIENT_ID: SmartAgricultureFMS
+  DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: G-UFVBDaSWKvc8P9QWjfwna3q6-n6_vRHSmL0CvN9T0SCJNfT0YDPR_XxYfKTREDoAS-jeuq1TbX2KnawbDodA==
+  DOCKER_INFLUXDB_INIT_BUCKET: SA-FMS
+  DOCKER_INFLUXDB_INIT_MODE: setup
+  DOCKER_INFLUXDB_INIT_ORG: se4iot
+  DOCKER_INFLUXDB_INIT_PASSWORD: admin123456!
+  DOCKER_INFLUXDB_INIT_RETENTION: 12h
+  DOCKER_INFLUXDB_INIT_USERNAME: admin
+  GF_RENDERING_CALLBACK_URL: http://grafana-SA-FMS:3000/
+  GF_RENDERING_SERVER_URL: http://grafana-renderer-SA-FMS:8081/render
+  GF_SECURITY_ADMIN_PASSWORD: admin
+  GF_SECURITY_ADMIN_USER: admin
+  GF_SMTP_EHLO_IDENTITY: localhost
+  GF_SMTP_ENABLED: "true"
+  GF_SMTP_FROM_ADDRESS: alert@example.com
+  GF_SMTP_FROM_NAME: Grafana Alert
+  GF_SMTP_HOST: maildev-SA-FMS:1025
+  GF_SMTP_PASSWORD: ""
+  GF_SMTP_SKIP_VERIFY: "true"
+  GF_SMTP_USER: ""
+  INFLUX_HOST: influxdb-SA-FMS
+  JAVA_OPTS: -Xms512m -Xmx1024m
+  MAILDEV_WEB_PASS: admin
+  MAILDEV_WEB_USER: admin
+  MQTT_BROKER: mosquitto-SA-FMS
+  MQTT_CLIENT_ID: sensor-simulator
+  TZ: Europe/Rome
+kind: ConfigMap
+metadata:
+  labels:
+    io.kompose.service: grafana-sa-fms-se4iot-SA-FMS-env
+  name: se4iot-SA-FMS-env

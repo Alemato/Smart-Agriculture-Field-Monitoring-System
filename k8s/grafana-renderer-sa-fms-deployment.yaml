@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --out k8s/
+    kompose.version: 1.35.0 (9532ceef3)
+  labels:
+    io.kompose.service: grafana-renderer-sa-fms
+  name: grafana-renderer-sa-fms
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: grafana-renderer-sa-fms
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert --out k8s/
+        kompose.version: 1.35.0 (9532ceef3)
+      labels:
+        io.kompose.service: grafana-renderer-sa-fms
+    spec:
+      containers:
+        - image: grafana/grafana-image-renderer:latest
+          name: grafana-renderer-sa-fms
+          ports:
+            - containerPort: 8081
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/lib/renderer
+              name: grafana-renderer-sa-fms-data
+      restartPolicy: Always
+      volumes:
+        - name: grafana-renderer-sa-fms-data
+          persistentVolumeClaim:
+            claimName: grafana-renderer-sa-fms-data
