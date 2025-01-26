@@ -3,6 +3,7 @@
 
 # Paths to the .env files
 influx_env="./InfluxDB-SA-FMS/influx.env"
+sensorsimulation_env="./sensor-simulator/sensor-simulator.env"
 nodered_env="./Node-RED-SA-FMS/nodered.env"
 telegraf_env="./Telegraf-SA-FMS/telegraf.env"
 grafana_env="./Grafana-SA-FMS/grafana.env"
@@ -24,6 +25,10 @@ if [ ! -f "$influx_env" ]; then
     echo "Error: The file $influx_env does not exist."
     exit 1
 fi
+if [ ! -f "$sensorsimulation_env" ]; then
+    echo "Error: The file $sensorsimulation_env does not exist."
+    exit 1
+fi
 if [ ! -f "$nodered_env" ]; then
     echo "Error: The file $nodered_env does not exist."
     exit 1
@@ -42,10 +47,10 @@ if [ ! -f "grafana_env" ]; then
 fi
 
 # Combine the .env files into one
-cat "$influx_env" "$nodered_env" "$telegraf_env" "$grafana_env" "$maildev_env" > "$output_env"
+cat "$influx_env" "$sensorsimulation_env" "$nodered_env" "$telegraf_env" "$grafana_env" "$maildev_env" > "$output_env"
 
 echo "Combined .env files into $output_env"
 
 # Execute docker compose build and up
 docker compose build --no-cache
-docker compose up -d
+docker compose up -d --scale telegraf-SA-FMS=2
