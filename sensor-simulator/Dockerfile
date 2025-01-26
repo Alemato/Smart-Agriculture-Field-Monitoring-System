@@ -11,7 +11,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Phase 2: Extract Layers - Optimize jar layout
-FROM bellsoft/liberica-openjre-alpine:21.0.5-cds AS extract
+FROM bellsoft/liberica-openjre-alpine:21.0.6-cds AS extract
 WORKDIR /builder
 
 # Copy the packaged jar from the build stage
@@ -22,7 +22,7 @@ COPY --from=build /app/${JAR_FILE} application.jar
 RUN java -Djarmode=tools -jar application.jar extract --layers --destination extracted
 
 # Phase 3: Run - Create a lightweight runtime container
-FROM bellsoft/liberica-openjre-alpine:21.0.5-cds
+FROM bellsoft/liberica-openjre-alpine:21.0.6-cds
 WORKDIR /app
 
 # Copy extracted layers from the builder stage
