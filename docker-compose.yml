@@ -11,6 +11,7 @@ services:
     volumes:
       - mosquitto_sa_fms_data:/mosquitto/data
       - mosquitto_sa_fms_logs:/mosquitto/log
+      - mosquitto_sa_fms_conf:/mosquitto/config
     networks:
       - se4iot-SA-FMS-network
     # restart: always
@@ -123,6 +124,7 @@ services:
 volumes:
   mosquitto_sa_fms_data:
   mosquitto_sa_fms_logs:
+  mosquitto_sa_fms_conf:
   nodered_sa_fms_data:
   influxdb_sa_fms_data:
   influxdb_sa_fms_config:
