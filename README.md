@@ -17,7 +17,7 @@
   <p align="center">
     University IoT project for intelligent monitoring of agricultural fields. It includes sensor simulation (soil moisture, temperature, pH, water salinity, relative humidity, rainfall) and automatic alert generation for critical conditions. The system aims to optimise resource management and improve agricultural efficiency.
     <br />
-    <a href="https://github.com/Alemato/Smart-Agriculture-Field-Monitoring-System"><strong>Explore all docs »</strong></a>
+    <a href="https://github.com/Alemato/Smart-Agriculture-Field-Monitoring-System/tree/main/docs/Documentation_SE4IOT_Smart_Agriculture_Field_Monitoring_System_EN.pdf"><strong>Explore all docs »</strong></a>
   </p>
 </div>
 
@@ -38,13 +38,14 @@
             <li><a href="#additional-notes">Additional Notes</a></li>
         </ul>
     </li>
--->
+
     <li>
       <a href="#implementation">Implementation</a>
       <ul>
         <li><a href="#sensor-simualtion">Sensor Simulator</a></li>
       </ul>
     </li>
+-->
     <li><a href="https://github.com/Alemato/Smart-Agriculture-Field-Monitoring-System/blob/main/LICENSE">License</a></li>
   </ol>
 </details>
@@ -85,12 +86,5 @@ By simulating sensors and related conditions, the project provides a scalable an
 
 The project meets all the requirements described in the following file:
 [SE4IOT_ Requirement_Document_for_the_IoT_System_Development_Project.pdf](docs/SE4IOT_%20Requirement_Document_for_the_IoT_System_Development_Project.pdf)
-
-<p align="right">(<a href="#readme-top">Back to table of contents</a>)</p>
-
-# Implementation
-## Sensor Simulation
-
-Sensor Simulation
 
 <p align="right">(<a href="#readme-top">Back to table of contents</a>)</p>
