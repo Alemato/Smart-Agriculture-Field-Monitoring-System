@@ -46,7 +46,7 @@ if not exist "%maildev_env%" (
 
 :: Combine the .env files into one
 type "%influx_env%" > "%output_env%"
-type "%sensorsimulation_env%" > "%output_env%"
+type "%sensorsimulation_env%" >> "%output_env%"
 type "%nodered_env%" >> "%output_env%"
 type "%telegraf_env%" >> "%output_env%"
 type "%grafana_env%" >> "%output_env%"

@@ -37,11 +37,11 @@ if [ ! -f "$telegraf_env" ]; then
     echo "Error: The file $telegraf_env does not exist."
     exit 1
 fi
-if [ ! -f "grafana_env" ]; then
+if [ ! -f "$grafana_env" ]; then
     echo "Error: The file $grafana_env does not exist."
     exit 1
 fi
-if [ ! -f "grafana_env" ]; then
+if [ ! -f "$maildev_env" ]; then
     echo "Error: The file $maildev_env does not exist."
     exit 1
 fi
