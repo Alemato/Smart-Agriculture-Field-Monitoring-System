@@ -435,7 +435,7 @@
         "type": "function",
         "z": "bb32693f1e238fb3",
         "name": "/help",
-        "func": "var chatId = msg.payload.chatId;\nvar chatContextKey = \"chat_\" + chatId;\n\n// Retrieve stored chat data or an empty array.\nvar storedChats = global.get('chats') || [];\nvar chats = new Map(storedChats);\n\n// Check if the chat context exists; if not, create it.\nif (!chats.has(chatContextKey)) {\n    chats.set(chatContextKey, { active: true });\n    global.set('chats', Array.from(chats.entries()));\n}\n\n// Check if alerts are activated for the current chat.\nvar helpMessage = \"\\n\";\nhelpMessage += \"\\nYou are welcome: <strong>\" + msg.originalMessage.from.username + \"</strong>\";\nhelpMessage += \"\\nThis Bot will allow you to manage the entire <strong>Smart Agriculture - Field Monitoring System</strong> project simulation.\"\nhelpMessage += \"\\n\";\nhelpMessage += \"\\nYour chat id is <strong>\" + chatId + \"</strong>\";\nhelpMessage += \"\\n\";\nhelpMessage += chats.has(chatContextKey) && chats.get(chatContextKey) ? \"\\nAlerts have been <strong>activated</strong> for this chat!\" : \"\\nAlerts have been <strong>deactivated</strong> for this chat!\";\nhelpMessage += \"\\n\";\n\n// Display a list of available commands.\nhelpMessage += \"\\nHere is a short list of commands:\";\nhelpMessage += \"\\n/help - Shows Help Messagge.\";\nhelpMessage += \"\\n/set_simulation - Set all simumaltion parameters.\";\nhelpMessage += \"\\n/update_simulation_condition - Update the simulation condition.\"\nhelpMessage += \"\\n/current_configuration - Gets the current configuration of the sensor simulator.\"\nhelpMessage += \"\\n/toggle_alert - Enable or disable the reception of alerts.\"\n\nhelpMessage += \"\\n\";\n\n\n\nmsg.payload.content = helpMessage;\nmsg.payload.options = {\n    parse_mode: 'HTML',\n    reply_parameters: {\n        message_id: msg.payload.messageId\n    }\n}\nreturn msg;",
+        "func": "var chatId = msg.payload.chatId;\nvar chatContextKey = \"chat_\" + chatId;\n\n// Retrieve stored chat data or an empty array.\nvar storedChats = global.get('chats') || [];\nvar chats = new Map(storedChats);\n\n// Check if the chat context exists; if not, create it.\nif (!chats.has(chatContextKey)) {\n    chats.set(chatContextKey, { active: true });\n    global.set('chats', Array.from(chats.entries()));\n}\n\n// Check if alerts are activated for the current chat.\nvar helpMessage = \"\\n\";\nhelpMessage += \"\\nYou are welcome: <strong>\" + msg.originalMessage.from.username + \"</strong>\";\nhelpMessage += \"\\nThis Bot will allow you to manage the entire <strong>Smart Agriculture - Field Monitoring System</strong> project simulation.\"\nhelpMessage += \"\\n\";\nhelpMessage += \"\\nYour chat id is <strong>\" + chatId + \"</strong>\";\nhelpMessage += \"\\n\";\nhelpMessage += chats.has(chatContextKey) && chats.get(chatContextKey) ? \"\\nAlerts have been <strong>activated</strong> for this chat!\" : \"\\nAlerts have been <strong>deactivated</strong> for this chat!\";\nhelpMessage += \"\\n\";\n\n// Display a list of available commands.\nhelpMessage += \"\\nHere is a short list of commands:\";\nhelpMessage += \"\\n/help - Shows Help Messagge.\";\nhelpMessage += \"\\n/set_simulation - Set all simumaltion parameters.\";\nhelpMessage += \"\\n/update_simulation_condition - Update the simulation condition.\";\nhelpMessage += \"\\n/current_configuration - Gets the current configuration of the sensor simulator.\";\nhelpMessage += \"\\n/update_simulation_condition - Update the simulation condition.\";\nhelpMessage += \"\\n/toggle_alert - Enable or disable the reception of alerts.\";\nhelpMessage += \"\\n/change_thresholds - Set the thresholds for the sensors simulator.\";\nhelpMessage += \"\\n/current_thresholds - Gets the current thresholds of the sensors.\";\nhelpMessage += \"\\n/start_simultation - Start sensors simulation.\";\nhelpMessage += \"\\n/stop_simultation - Stop sensors simulation.\";\nhelpMessage += \"\\n/generate_report - Generete image report of fileds.\";\nhelpMessage += \"\\n/set_email_notification - Set email for Notification.\";\n\nhelpMessage += \"\\n\";\n\n\n\nmsg.payload.content = helpMessage;\nmsg.payload.options = {\n    parse_mode: 'HTML',\n    reply_parameters: {\n        message_id: msg.payload.messageId\n    }\n}\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -2645,7 +2645,6 @@
         "y": 3400,
         "wires": [
             [
-                "03af5b055e193375",
                 "8180b165454542bb"
             ]
         ]
@@ -2685,23 +2684,6 @@
         ]
     },
     {
-        "id": "03af5b055e193375",
-        "type": "debug",
-        "z": "bb32693f1e238fb3",
-        "name": "RICEVUTO",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 490,
-        "y": 3320,
-        "wires": []
-    },
-    {
         "id": "1d4fa3ebecd6de4c",
         "type": "link out",
         "z": "bb32693f1e238fb3",
@@ -2730,8 +2712,7 @@
         "y": 3400,
         "wires": [
             [
-                "51629de246e5ec71",
-                "03af5b055e193375"
+                "51629de246e5ec71"
             ]
         ]
     },
@@ -2741,7 +2722,7 @@
         "z": "bb32693f1e238fb3",
         "name": "",
         "command": "/generate_report",
-        "description": "Generete_report",
+        "description": "Generete image report of fileds",
         "registercommand": true,
         "language": "",
         "scope": "all_private_chats",
@@ -2905,23 +2886,6 @@
         ]
     },
     {
-        "id": "9c0e2335d5d52380",
-        "type": "debug",
-        "z": "bb32693f1e238fb3",
-        "name": "IMG",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 810,
-        "y": 3680,
-        "wires": []
-    },
-    {
         "id": "160e6d7f91fb017d",
         "type": "function",
         "z": "bb32693f1e238fb3",
@@ -2946,7 +2910,7 @@
         "type": "debug",
         "z": "bb32693f1e238fb3",
         "name": "debug 15",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2964,7 +2928,7 @@
         "z": "bb32693f1e238fb3",
         "name": "",
         "command": "/set_email_notification",
-        "description": "Set email Notification",
+        "description": "Set email for Notification",
         "registercommand": true,
         "language": "",
         "scope": "all_private_chats",
@@ -3029,8 +2993,7 @@
         "y": 3780,
         "wires": [
             [
-                "c12b2a25350dd7c4",
-                "645f9ea8da41f7c1"
+                "c12b2a25350dd7c4"
             ]
         ]
     },
@@ -3069,11 +3032,11 @@
         ]
     },
     {
-        "id": "645f9ea8da41f7c1",
+        "id": "9c0e2335d5d52380",
         "type": "debug",
         "z": "bb32693f1e238fb3",
-        "name": "debug 17",
-        "active": true,
+        "name": "IMG",
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -3081,8 +3044,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1170,
-        "y": 3720,
+        "x": 810,
+        "y": 3660,
         "wires": []
     },
     {
