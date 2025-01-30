@@ -33,7 +33,7 @@
         "usetls": false,
         "tls": "",
         "influxdbVersion": "2.0",
-        "url": "http://host.docker.internal:8086",
+        "url": "http://influxdb-SA-FMS:8086",
         "timeout": 10,
         "rejectUnauthorized": true
     },
@@ -229,72 +229,6 @@
         "wires": []
     },
     {
-        "id": "5b2e14e9b6cbd2fa",
-        "type": "influxdb in",
-        "z": "f6f2187d.f17ca8",
-        "influxdb": "8cbf2748df1bc57f",
-        "name": "",
-        "query": "",
-        "rawOutput": false,
-        "precision": "",
-        "retentionPolicy": "",
-        "org": "se4iot",
-        "x": 510,
-        "y": 500,
-        "wires": [
-            [
-                "4d2dd74fee2521e2"
-            ]
-        ]
-    },
-    {
-        "id": "538d7385b4eb041a",
-        "type": "inject",
-        "z": "f6f2187d.f17ca8",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "query",
-                "v": "from(bucket: \"SA-FMS\")\t  |> range(start: -5000ms)\t  |> filter(fn: (r) => r[\"_measurement\"] == \"smart_agriculture_measurements\")\t  |> group(columns: [\"field_id\", \"sensor_type\"])\t  |> last()",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 240,
-        "y": 500,
-        "wires": [
-            [
-                "5b2e14e9b6cbd2fa"
-            ]
-        ]
-    },
-    {
-        "id": "4d2dd74fee2521e2",
-        "type": "debug",
-        "z": "f6f2187d.f17ca8",
-        "name": "Influx",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 750,
-        "y": 500,
-        "wires": []
-    },
-    {
         "id": "9e890f19a0dbdff1",
         "type": "inject",
         "z": "f6f2187d.f17ca8",
@@ -422,8 +356,8 @@
         "topic": "",
         "payload": "true",
         "payloadType": "bool",
-        "x": 340,
-        "y": 600,
+        "x": 200,
+        "y": 440,
         "wires": [
             [
                 "fc2f8f38ed76a812"
@@ -442,8 +376,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 590,
-        "y": 600,
+        "x": 670,
+        "y": 440,
         "wires": []
     },
     {
@@ -463,8 +397,8 @@
         "topic": "",
         "payload": "false",
         "payloadType": "bool",
-        "x": 340,
-        "y": 640,
+        "x": 200,
+        "y": 480,
         "wires": [
             [
                 "fc2f8f38ed76a812"
