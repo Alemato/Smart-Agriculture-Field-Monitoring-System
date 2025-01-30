@@ -16,6 +16,8 @@ import org.springframework.integration.router.HeaderValueRouter;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 
+import java.nio.charset.StandardCharsets;
+
 @Slf4j
 @Configuration
 public class MqttConfiguration {
@@ -31,6 +33,8 @@ public class MqttConfiguration {
         options.setServerURIs(new String[]{mqttProperties.getBrokerUrl()});
         options.setAutomaticReconnect(true);
         options.setCleanStart(true); // Usare per mantenere lo stato delle sottoscrizioni
+        options.setUserName(mqttProperties.getUsername());
+        options.setPassword(mqttProperties.getPassword().getBytes(StandardCharsets.UTF_8));
         return options;
     }
 
@@ -69,6 +73,7 @@ public class MqttConfiguration {
         );
         adapter.setOutputChannel(mqttInputChannel());
         adapter.setErrorChannel(errorChannel());
+        adapter.setQos(2);
         return adapter;
     }
 
@@ -123,6 +128,7 @@ public class MqttConfiguration {
     public MessageHandler mqttOutbound() {
         Mqttv5PahoMessageHandler handler = new Mqttv5PahoMessageHandler(mqttv5ClientManager());
         handler.setAsync(true);
+        handler.setDefaultQos(2);
         return handler;
     }
 }

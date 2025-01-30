@@ -10,4 +10,6 @@ import org.springframework.stereotype.Component;
 public class MqttProperties {
     private String brokerUrl;
     private String clientId;
+    private String username;
+    private String password;
 }

@@ -3,5 +3,7 @@ spring.application:
   version: 1.0.0
 
 mqtt:
-  broker-url: ${BROKER-PROTOCOL:tcp}://${BROKER-URL:localhost}:${BROKER-PORT:1883}
-  client-id: ${MQTT-CLIENT-ID:sensor-simulator}
+  broker-url: ${BROKER_PROTOCOL:tcp}://${BROKER_URL:localhost}:${BROKER_PORT:1883}
+  client-id: ${MQTT_CLIENT_ID:sensor-simulator}
+  username: ${BROKER_USERNAME:admin}
+  password: ${BROKER_PWD:admin}
