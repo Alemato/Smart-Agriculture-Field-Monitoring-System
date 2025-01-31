@@ -2327,7 +2327,8 @@
         "y": 800,
         "wires": [
             [
-                "4df5412302acb979"
+                "4df5412302acb979",
+                "b851afbe61ccf293"
             ]
         ]
     },
@@ -2406,7 +2407,8 @@
         "y": 880,
         "wires": [
             [
-                "4df5412302acb979"
+                "4df5412302acb979",
+                "6699d415b54d4849"
             ]
         ]
     },
@@ -3026,6 +3028,32 @@
         "statusType": "auto",
         "x": 750,
         "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "b851afbe61ccf293",
+        "type": "link out",
+        "z": "bb32693f1e238fb3",
+        "name": "link out 1",
+        "mode": "link",
+        "links": [
+            "986d77efaa034807"
+        ],
+        "x": 1025,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "6699d415b54d4849",
+        "type": "link out",
+        "z": "bb32693f1e238fb3",
+        "name": "link out 2",
+        "mode": "link",
+        "links": [
+            "3c24c8c58f47effd"
+        ],
+        "x": 865,
+        "y": 880,
         "wires": []
     },
     {
@@ -4434,7 +4462,8 @@
         "z": "974a61a99863234b",
         "name": "start-sim",
         "links": [
-            "c3658e8c395688ef"
+            "c3658e8c395688ef",
+            "b851afbe61ccf293"
         ],
         "x": 175,
         "y": 940,
@@ -4450,7 +4479,8 @@
         "z": "974a61a99863234b",
         "name": "stop-sim",
         "links": [
-            "92afd731d3dbf926"
+            "92afd731d3dbf926",
+            "6699d415b54d4849"
         ],
         "x": 175,
         "y": 1020,
